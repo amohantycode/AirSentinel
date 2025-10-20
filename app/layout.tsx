@@ -20,12 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <div className="flex min-h-screen flex-col">
-          <Suspense fallback={<div>Loading...</div>}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <div className="flex min-h-screen flex-col bg-background">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 w-full">{children}</main>
             <SiteFooter />
           </Suspense>
         </div>

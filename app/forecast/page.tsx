@@ -36,46 +36,48 @@ export default function ForecastPage() {
   const maxAQI = Math.round(Math.max(...mockForecastData.map((d) => d.aqi)))
 
   return (
-    <div className="container py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Air Quality Forecast</h1>
-        <p className="text-muted-foreground">24-hour predictions to plan your outdoor activities</p>
-      </div>
+    <div className="w-full">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Air Quality Forecast</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">24-hour predictions to plan your outdoor activities</p>
+        </div>
 
-      {/* Location Selection */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Select Location</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 flex gap-2">
-              <Input
-                placeholder="Search city or zip code..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button size="icon">
-                <Search className="h-4 w-4" />
-              </Button>
+        {/* Location Selection */}
+        <Card className="mb-4 sm:mb-6">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base sm:text-lg">Select Location</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 flex gap-2">
+                <Input
+                  placeholder="Search city or zip code..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="text-sm"
+                />
+                <Button size="icon" className="flex-shrink-0">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger className="w-full sm:w-[250px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockLocations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger className="w-full sm:w-[250px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {mockLocations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Main Forecast Chart */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -173,6 +175,7 @@ export default function ForecastPage() {
           {/* Health Recommendations */}
           <HealthRecommendations aqi={currentAQI} />
         </div>
+      </div>
       </div>
     </div>
   )

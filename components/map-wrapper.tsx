@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { getAQIColor, getAQILevelName } from "@/lib/aqi-utils"
 import { Card } from "@/components/ui/card"
+import { GoogleMapWrapper } from "@/components/google-map-wrapper"
+import { config } from "@/lib/config"
 
 interface MapLocation {
   lat: number
@@ -28,6 +30,19 @@ export function MapWrapper({
 }: MapWrapperProps) {
   const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null)
   const [hoveredLocation, setHoveredLocation] = useState<MapLocation | null>(null)
+
+  // Use Google Maps if configured
+  if (config.mapsProvider === 'google' && config.googleMapsApiKey) {
+    return (
+      <GoogleMapWrapper
+        locations={locations}
+        center={{ lat: center[0], lng: center[1] }}
+        zoom={zoom}
+        height={height}
+        onLocationClick={onLocationClick}
+      />
+    )
+  }
 
   // Convert lat/lon to SVG coordinates (simplified projection for USA)
   const latLonToXY = (lat: number, lon: number) => {

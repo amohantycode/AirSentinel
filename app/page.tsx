@@ -36,33 +36,34 @@ export default async function HomePage() {
   const observations = await getLatestObservations()
 
   return (
-    <div className="flex flex-col">
-      <section className="relative py-24 md:py-32 lg:py-40 overflow-hidden">
+    <div className="flex flex-col w-full">
+      {/* Hero Section */}
+      <section className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-hidden">
         {/* Atmospheric background effects */}
         <div className="absolute inset-0 atmospheric-gradient" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-accent/10 rounded-full blur-3xl" />
 
-        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-primary/30">
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-primary">Real-time Air Quality Monitoring</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-balance">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance leading-tight">
               Breathe Easier with{" "}
               <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 AirAware
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-muted-foreground text-balance max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-balance max-w-2xl mx-auto leading-relaxed px-4">
               Monitor local air quality, get AI-powered forecasts, and receive intelligent alerts to protect your
               family's health.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 md:pt-6 px-4">
               <Button size="lg" asChild className="glow-primary text-base h-12 px-8">
                 <Link href="/map">
                   <Map className="mr-2 h-5 w-5" />
@@ -85,11 +86,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 relative">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Current Air Quality</h2>
-            <p className="text-lg text-muted-foreground">Live readings from monitored locations</p>
+      {/* Current Air Quality Section */}
+      <section className="py-12 sm:py-16 md:py-20 relative bg-background/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 text-balance">Current Air Quality</h2>
+            <p className="text-base sm:text-lg text-muted-foreground">Live readings from monitored locations</p>
           </div>
 
           {observations.length > 0 ? (

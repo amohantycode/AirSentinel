@@ -76,33 +76,34 @@ export default function AlertsPage() {
   }
 
   return (
-    <div className="container py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Air Quality Alerts</h1>
-        <p className="text-muted-foreground">Get notified when air quality reaches unhealthy levels</p>
-      </div>
+    <div className="w-full">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Air Quality Alerts</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Get notified when air quality reaches unhealthy levels</p>
+        </div>
 
-      {/* Info Alert */}
-      <Alert className="mb-6">
-        <CheckCircle2 className="h-4 w-4" />
-        <AlertTitle>Stay Protected</AlertTitle>
-        <AlertDescription>
-          Set up alerts to receive email notifications when air quality in your area exceeds your chosen threshold.
-          Perfect for protecting sensitive family members.
-        </AlertDescription>
-      </Alert>
+        {/* Info Alert */}
+        <Alert className="mb-4 sm:mb-6">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertTitle className="text-sm sm:text-base">Stay Protected</AlertTitle>
+          <AlertDescription className="text-sm">
+            Set up alerts to receive email notifications when air quality in your area exceeds your chosen threshold.
+            Perfect for protecting sensitive family members.
+          </AlertDescription>
+        </Alert>
 
-      {/* Create Alert Button */}
-      {!showForm && (
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <Button onClick={() => setShowForm(true)} className="w-full" size="lg">
-              <Plus className="mr-2 h-5 w-5" />
-              Create New Alert
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+        {/* Create Alert Button */}
+        {!showForm && (
+          <Card className="mb-4 sm:mb-6">
+            <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+              <Button onClick={() => setShowForm(true)} className="w-full" size="lg">
+                <Plus className="mr-2 h-5 w-5" />
+                Create New Alert
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
       {/* Create Alert Form */}
       {showForm && (
@@ -260,6 +261,7 @@ export default function AlertsPage() {
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }
