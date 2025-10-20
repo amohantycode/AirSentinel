@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button"
 import { Search, MapPin, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-// Fallback mock data if API is not configured
+// Fallback mock data if API is not configured - DMV region
 const fallbackLocations = [
-  { lat: 34.0522, lon: -118.2437, name: "Los Angeles, CA", aqi: 87 },
-  { lat: 37.7749, lon: -122.4194, name: "San Francisco, CA", aqi: 42 },
-  { lat: 40.7128, lon: -74.006, name: "New York, NY", aqi: 55 },
-  { lat: 41.8781, lon: -87.6298, name: "Chicago, IL", aqi: 68 },
-  { lat: 29.7604, lon: -95.3698, name: "Houston, TX", aqi: 72 },
-  { lat: 33.4484, lon: -112.074, name: "Phoenix, AZ", aqi: 95 },
-  { lat: 47.6062, lon: -122.3321, name: "Seattle, WA", aqi: 38 },
-  { lat: 39.7392, lon: -104.9903, name: "Denver, CO", aqi: 61 },
+  { lat: 38.9072, lon: -77.0369, name: "Washington, DC", aqi: 45 },
+  { lat: 39.2904, lon: -76.6122, name: "Baltimore, MD", aqi: 52 },
+  { lat: 38.8816, lon: -77.0910, name: "Arlington, VA", aqi: 38 },
+  { lat: 38.8048, lon: -77.0469, name: "Alexandria, VA", aqi: 42 },
+  { lat: 38.9907, lon: -77.0261, name: "Silver Spring, MD", aqi: 48 },
+  { lat: 39.0840, lon: -77.1528, name: "Rockville, MD", aqi: 41 },
+  { lat: 38.9807, lon: -77.1006, name: "Bethesda, MD", aqi: 39 },
+  { lat: 38.8462, lon: -77.3064, name: "Fairfax, VA", aqi: 44 },
 ]
 
 interface Location {
@@ -84,11 +84,11 @@ export default function MapPage() {
     <div className="w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Live Air Quality Map</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">DMV Air Quality Map</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             {isUsingMockData 
-              ? "Showing sample data - Configure Supabase to see real-time AQI readings" 
-              : "Explore real-time AQI readings across the country"}
+              ? "Showing sample DMV data - Configure Supabase to see real-time AQI readings" 
+              : "Explore real-time AQI readings across DC, Maryland, and Virginia"}
           </p>
         </div>
 

@@ -27,8 +27,8 @@ interface GoogleMapWrapperProps {
 
 export function GoogleMapWrapper({
   locations,
-  center = { lat: 39.8283, lng: -98.5795 }, // Center of USA
-  zoom = 4,
+  center = { lat: 38.9072, lng: -77.0369 }, // Center of DMV (Washington DC)
+  zoom = 9, // Zoom level to show DMV region
   height = "500px",
   onLocationClick,
 }: GoogleMapWrapperProps) {
@@ -67,9 +67,23 @@ export function GoogleMapWrapper({
 
         if (!mapRef.current) return
 
+        // DMV region bounds
+        const dmvBounds = {
+          north: 39.8, // Northern Maryland
+          south: 37.9, // Southern Virginia
+          west: -78.2, // Western Virginia
+          east: -76.0, // Eastern Maryland
+        }
+
         const mapInstance = new google.maps.Map(mapRef.current, {
           center,
           zoom,
+          restriction: {
+            latLngBounds: dmvBounds,
+            strictBounds: false, // Allow some panning outside
+          },
+          minZoom: 8, // Prevent zooming out too far
+          maxZoom: 15, // Prevent zooming in too close
           styles: [
             {
               featureType: "poi",
@@ -157,18 +171,25 @@ export function GoogleMapWrapper({
 
     setMarkers(newMarkers)
 
-    // Fit bounds to show all markers
+    // Fit bounds to show all markers within DMV region
     if (locations.length > 0) {
       const bounds = new google.maps.LatLngBounds()
       locations.forEach((location) => {
         bounds.extend({ lat: location.lat, lng: location.lon })
       })
-      map.fitBounds(bounds)
+      
+      // Add padding to bounds for better view
+      const padding = { top: 50, right: 50, bottom: 50, left: 50 }
+      map.fitBounds(bounds, padding)
 
-      // Ensure we don't zoom in too much
+      // Ensure we stay within a reasonable zoom range for DMV
       const listener = google.maps.event.addListener(map, "idle", () => {
         const currentZoom = map.getZoom()
-        if (currentZoom && currentZoom > 15) map.setZoom(15)
+        if (currentZoom && currentZoom > 12) {
+          map.setZoom(12) // Max zoom for DMV overview
+        } else if (currentZoom && currentZoom < 8) {
+          map.setZoom(8) // Min zoom to keep DMV in view
+        }
         google.maps.event.removeListener(listener)
       })
     }

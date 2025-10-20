@@ -1,11 +1,59 @@
 import { type NextRequest, NextResponse } from "next/server"
+import path from 'path';
+import fs from 'fs';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const location = searchParams.get("location")
-    const limit = Number.parseInt(searchParams.get("limit") || "10")
+    const limit = Number.parseInt(searchParams.get("limit") || "50")
 
+    // Try to load from 2025 static JSON data first
+    try {
+      const jsonPath = path.join(process.cwd(), 'public', 'data-2025-latest.json');
+      
+      if (fs.existsSync(jsonPath)) {
+        const fileContent = fs.readFileSync(jsonPath, 'utf-8');
+        const data2025 = JSON.parse(fileContent);
+
+        // Filter by location if requested
+        let filteredData = data2025;
+        if (location) {
+          filteredData = data2025.filter((obs: any) => 
+            obs.location.toLowerCase().includes(location.toLowerCase())
+          );
+        }
+
+        // Limit results
+        filteredData = filteredData.slice(0, limit);
+
+        // Transform to match expected format
+        const transformedData = filteredData.map((obs: any) => ({
+          location_name: obs.location,
+          lat: obs.latitude,
+          lon: obs.longitude,
+          aqi: obs.aqi,
+          category: obs.category,
+          pollutant: obs.pollutant,
+          concentration: obs.concentration,
+          observed_at: obs.date,
+          source: '2025 DMV Data',
+          state: obs.state,
+          county: obs.county
+        }));
+
+        return NextResponse.json({
+          success: true,
+          data: transformedData,
+          count: transformedData.length,
+          source: '2025 Historical Data'
+        });
+      }
+    } catch (jsonError) {
+      console.log('2025 JSON data not available, falling back to Supabase');
+    }
+
+    // Fallback to Supabase if 2025 data fails
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 

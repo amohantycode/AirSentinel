@@ -1,0 +1,38 @@
+{
+  "timestamp": "20251020_162328",
+  "model_type": "Gradient Boosting",
+  "feature_columns": [
+    "concentration",
+    "latitude",
+    "longitude",
+    "month",
+    "day_of_week",
+    "day_of_year",
+    "is_weekend",
+    "season",
+    "pollutant_NO2",
+    "pollutant_Ozone",
+    "pollutant_PM2.5"
+  ],
+  "metrics": {
+    "Random Forest": {
+      "train_mae": 0.021414580584557988,
+      "test_mae": 0.11003622553982215,
+      "train_rmse": 0.6857502879369894,
+      "test_rmse": 2.5456074109249083,
+      "train_r2": 0.9983342748979124,
+      "test_r2": 0.9781074666434315
+    },
+    "Gradient Boosting": {
+      "train_mae": 0.030510956584152517,
+      "test_mae": 0.06166349154459384,
+      "train_rmse": 0.05481380687969214,
+      "test_rmse": 0.835077137095969,
+      "train_r2": 0.9999893573136334,
+      "test_r2": 0.9976440484547398
+    }
+  },
+  "training_data_year": 2025,
+  "model_path": "/Users/ankit/Downloads/congressional (1)/scripts/../models/aqi_model_20251020_162328.pkl",
+  "scaler_path": "/Users/ankit/Downloads/congressional (1)/scripts/../models/aqi_scaler_20251020_162328.pkl"
+}

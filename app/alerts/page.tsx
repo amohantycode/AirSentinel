@@ -19,18 +19,18 @@ interface AlertSubscription {
   isActive: boolean
 }
 
-// Mock data - will be replaced with real API calls
+// Mock data - Real DMV monitoring locations
 const mockAlerts: AlertSubscription[] = [
   {
     id: "1",
-    location: "Los Angeles, CA",
+    location: "River Terrace, DC",
     email: "user@example.com",
     threshold: 100,
     isActive: true,
   },
   {
     id: "2",
-    location: "San Francisco, CA",
+    location: "Baltimore County, MD",
     email: "user@example.com",
     threshold: 150,
     isActive: false,
