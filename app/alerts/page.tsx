@@ -53,7 +53,7 @@ export default function AlertsPage() {
       if (alerts.length === 0) return
       
       // Check first active alert location
-      const activeAlert = alerts.find(a => a.isActive)
+      const activeAlert = alerts.find((a: AlertSubscription) => a.isActive)
       if (!activeAlert) return
 
       try {
@@ -70,8 +70,8 @@ export default function AlertsPage() {
           )
           
           const triggered = alerts
-            .filter(a => a.isActive && maxAQI >= a.threshold)
-            .map(a => a.id)
+            .filter((a: AlertSubscription) => a.isActive && maxAQI >= a.threshold)
+            .map((a: AlertSubscription) => a.id)
           
           setActiveAlerts(triggered)
         }
@@ -100,11 +100,11 @@ export default function AlertsPage() {
   }
 
   const handleToggleAlert = (id: string) => {
-    setAlerts(alerts.map((alert) => (alert.id === id ? { ...alert, isActive: !alert.isActive } : alert)))
+    setAlerts(alerts.map((alert: AlertSubscription) => (alert.id === id ? { ...alert, isActive: !alert.isActive } : alert)))
   }
 
   const handleDeleteAlert = (id: string) => {
-    setAlerts(alerts.filter((alert) => alert.id !== id))
+    setAlerts(alerts.filter((alert: AlertSubscription) => alert.id !== id))
   }
 
   const getThresholdLabel = (threshold: number) => {
@@ -168,13 +168,13 @@ export default function AlertsPage() {
               <Label htmlFor="location">Location</Label>
               <Select
                 value={formData.location}
-                onValueChange={(value) => setFormData({ ...formData, location: value })}
+                onValueChange={(value: string) => setFormData({ ...formData, location: value })}
               >
                 <SelectTrigger id="location">
                   <SelectValue placeholder="Select DMV location" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DMV_LOCATIONS.map((loc) => (
+                  {DMV_LOCATIONS.map((loc: string) => (
                     <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                   ))}
                 </SelectContent>
@@ -188,7 +188,7 @@ export default function AlertsPage() {
                 type="email"
                 placeholder="your@email.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
 
@@ -196,7 +196,7 @@ export default function AlertsPage() {
               <Label htmlFor="threshold">Alert Threshold (AQI)</Label>
               <Select
                 value={formData.threshold}
-                onValueChange={(value) => setFormData({ ...formData, threshold: value })}
+                onValueChange={(value: string) => setFormData({ ...formData, threshold: value })}
               >
                 <SelectTrigger id="threshold">
                   <SelectValue />
@@ -243,7 +243,7 @@ export default function AlertsPage() {
             </CardContent>
           </Card>
         ) : (
-          alerts.map((alert) => (
+          alerts.map((alert: AlertSubscription) => (
             <Card key={alert.id}>
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between gap-4">

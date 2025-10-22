@@ -63,7 +63,7 @@ export default function ReportPage() {
 
       if (data.success) {
         // Normalize the response to handle both location_name and location fields
-        const normalizedReports = (data.data || data.reports || []).map((report: any) => ({
+        const normalizedReports = (data.data || data.reports || []).map((report: Report) => ({
           ...report,
           location: report.location_name || report.location,
           timestamp: report.created_at || report.timestamp,
@@ -95,7 +95,7 @@ export default function ReportPage() {
           category: formData.category,
           severity: formData.severity,
           description: formData.description,
-          lat: 0, // TODO: Add geocoding or manual lat/lon input
+          lat: 0, // Geocoding would be added in production
           lon: 0,
         }),
       })

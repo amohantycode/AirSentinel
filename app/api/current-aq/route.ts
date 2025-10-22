@@ -97,12 +97,13 @@ print(json.dumps(result))
         "Cache-Control": "public, max-age=300", // Cache for 5 minutes
       },
     })
-  } catch (error: any) {
-    console.error("[Current AQ API] Error:", error.message)
+  } catch (error) {
+    const err = error as Error
+    console.error("[Current AQ API] Error:", err.message)
     return NextResponse.json(
       {
         error: "Failed to fetch current air quality",
-        details: error.message,
+        details: err.message,
       },
       { status: 500 }
     )

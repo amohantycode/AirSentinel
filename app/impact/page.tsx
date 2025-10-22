@@ -53,7 +53,7 @@ export default function ImpactPage() {
   const avgResponseTime = 2.3 // Keep baseline for now
   
   // Format for chart with real dates
-  const chartData = dataPoints.map((d: any) => {
+  const chartData = dataPoints.map((d: { date: string; aqi: number }) => {
     const date = new Date(d.date)
     return {
       time: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),

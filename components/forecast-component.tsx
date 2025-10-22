@@ -79,8 +79,9 @@ export function ForecastComponent() {
 
       const data = await response.json()
       setForecast(data)
-    } catch (err: any) {
-      setError(err.message || "An error occurred")
+    } catch (err) {
+      const error = err as Error
+      setError(error.message || "An error occurred")
       setForecast(null)
     } finally {
       setLoading(false)

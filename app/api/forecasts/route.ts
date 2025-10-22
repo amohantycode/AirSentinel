@@ -113,13 +113,14 @@ export async function GET(request: NextRequest) {
         timeout: 120000, // 2 minutes max wait
         stdio: ["pipe", "pipe", "pipe"],
       })
-    } catch (execError: any) {
-      console.error("[Forecast API] Python execution failed:", execError.message)
+    } catch (execError) {
+      const error = execError as { message: string; stderr?: Buffer }
+      console.error("[Forecast API] Python execution failed:", error.message)
       return NextResponse.json(
         {
           error: "Forecast generation failed",
           city,
-          reason: execError.stderr?.toString() || execError.message,
+          reason: error.stderr?.toString() || error.message,
           hint: "Check WeatherAPI key and city name validity"
         },
         { status: 500 }
@@ -150,12 +151,13 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/json",
       }
     })
-  } catch (error: any) {
-    console.error("[Forecast API] Error:", error)
+  } catch (error) {
+    const err = error as Error
+    console.error("[Forecast API] Error:", err)
     return NextResponse.json(
       {
         error: "Internal server error",
-        message: error.message
+        message: err.message
       },
       { status: 500 }
     )
@@ -196,11 +198,12 @@ export async function POST(request: NextRequest) {
     url.searchParams.set("key", key)
 
     return GET(new NextRequest(url))
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as Error
     return NextResponse.json(
       {
         error: "Invalid request body",
-        message: error.message
+        message: err.message
       },
       { status: 400 }
     )

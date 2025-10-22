@@ -28,6 +28,17 @@ interface Location {
   aqi: number
 }
 
+interface ApiObservation {
+  latitude?: number
+  lat?: number
+  longitude?: number
+  lon?: number
+  location_name?: string
+  name?: string
+  aqi?: number
+  aqi_value?: number
+}
+
 export default function MapPage() {
   const [locations, setLocations] = useState<Location[]>(fallbackLocations)
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
@@ -53,9 +64,9 @@ export default function MapPage() {
 
         if (result.success && result.data && result.data.length > 0) {
           // Transform API data to location format
-          const transformedLocations: Location[] = result.data.map((obs: any) => ({
-            lat: obs.latitude || obs.lat,
-            lon: obs.longitude || obs.lon,
+          const transformedLocations: Location[] = result.data.map((obs: ApiObservation) => ({
+            lat: obs.latitude || obs.lat || 0,
+            lon: obs.longitude || obs.lon || 0,
             name: obs.location_name || obs.name || "Unknown Location",
             aqi: obs.aqi || obs.aqi_value || 0,
           }))

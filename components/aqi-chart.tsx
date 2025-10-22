@@ -12,7 +12,7 @@ interface AQIChartProps {
 }
 
 // Custom tooltip for better interactivity
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     const aqi = data.aqi
@@ -54,9 +54,9 @@ const CustomTooltip = ({ active, payload }: any) => {
 }
 
 // Custom dot for hover effect
-const CustomDot = (props: any) => {
+const CustomDot = (props: { cx?: number; cy?: number; payload?: { aqi: number } }) => {
   const { cx, cy, payload } = props
-  const aqi = payload.aqi
+  const aqi = payload?.aqi || 0
 
   let color = "#808080"
   if (aqi <= 50) color = "#22c55e"

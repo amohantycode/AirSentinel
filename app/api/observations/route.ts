@@ -2,6 +2,19 @@ import { type NextRequest, NextResponse } from "next/server"
 import path from 'path';
 import fs from 'fs';
 
+interface RawObservation {
+  location: string
+  latitude: number
+  longitude: number
+  aqi: number
+  category: string
+  pollutant: string
+  concentration: number
+  date: string
+  state: string
+  county: string
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -19,7 +32,7 @@ export async function GET(request: NextRequest) {
         // Filter by location if requested
         let filteredData = data2025;
         if (location) {
-          filteredData = data2025.filter((obs: any) => 
+          filteredData = data2025.filter((obs: RawObservation) => 
             obs.location.toLowerCase().includes(location.toLowerCase())
           );
         }
@@ -28,7 +41,7 @@ export async function GET(request: NextRequest) {
         filteredData = filteredData.slice(0, limit);
 
         // Transform to match expected format
-        const transformedData = filteredData.map((obs: any) => ({
+        const transformedData = filteredData.map((obs: RawObservation) => ({
           location_name: obs.location,
           lat: obs.latitude,
           lon: obs.longitude,

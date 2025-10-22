@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { AQICard } from "@/components/aqi-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Map, TrendingUp, Bell, Users, Wind, AlertTriangle, ArrowRight, Sparkles } from "lucide-react"
+import { Observation } from "@/lib/types"
 
 async function getLatestObservations() {
   try {
@@ -96,7 +97,7 @@ export default async function HomePage() {
 
           {observations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-              {observations.slice(0, 6).map((obs: any) => (
+              {observations.slice(0, 6).map((obs: Observation) => (
                 <AQICard
                   key={obs.id}
                   location={obs.location_name}

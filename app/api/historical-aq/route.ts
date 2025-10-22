@@ -14,7 +14,14 @@ const PM25_BREAKPOINTS = [
   { cLow: 250.5, cHigh: 500.4, iLow: 301, iHigh: 500 },
 ]
 
-function calculateAQI(concentration: number, breakpoints: any[]): number {
+interface Breakpoint {
+  cLow: number
+  cHigh: number
+  iLow: number
+  iHigh: number
+}
+
+function calculateAQI(concentration: number, breakpoints: Breakpoint[]): number {
   for (const bp of breakpoints) {
     if (concentration >= bp.cLow && concentration <= bp.cHigh) {
       const aqi = ((bp.iHigh - bp.iLow) / (bp.cHigh - bp.cLow)) * (concentration - bp.cLow) + bp.iLow
@@ -51,7 +58,22 @@ export async function GET(request: Request) {
       )
     }
 
-    const historicalData: any[] = []
+    interface PollutantData {
+      value: number
+      unit: string
+    }
+
+    interface HistoricalDataPoint {
+      date: string
+      aqi: number
+      pm25: number | PollutantData
+      o3?: PollutantData
+      no2?: PollutantData
+      category: string
+      dominantPollutant?: string
+    }
+
+    const historicalData: HistoricalDataPoint[] = []
     const today = new Date()
 
     // Try to fetch forecast data (free tier supports up to 10 days)
@@ -169,11 +191,11 @@ export async function GET(request: Request) {
             unit: "µg/m³",
           },
           o3: {
-            value: (Math.random() * 50 + 30).toFixed(1),
+            value: parseFloat((Math.random() * 50 + 30).toFixed(1)),
             unit: "ppb",
           },
           no2: {
-            value: (Math.random() * 20 + 10).toFixed(1),
+            value: parseFloat((Math.random() * 20 + 10).toFixed(1)),
             unit: "ppb",
           },
           aqi: Math.round(simulatedAQI),
