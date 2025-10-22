@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { Bell, Plus, Trash2, MapPin, Mail, CheckCircle2 } from "lucide-react"
+import { Bell, Plus, Trash2, MapPin, Mail, CheckCircle2, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface AlertSubscription {
@@ -19,32 +19,72 @@ interface AlertSubscription {
   isActive: boolean
 }
 
-// Mock data - Real DMV monitoring locations
-const mockAlerts: AlertSubscription[] = [
-  {
-    id: "1",
-    location: "River Terrace, DC",
-    email: "user@example.com",
-    threshold: 100,
-    isActive: true,
-  },
-  {
-    id: "2",
-    location: "Baltimore County, MD",
-    email: "user@example.com",
-    threshold: 150,
-    isActive: false,
-  },
+interface CurrentAQ {
+  pm25?: { aqi: number; category: string }
+  o3?: { aqi: number; category: string }
+  no2?: { aqi: number; category: string }
+}
+
+// DMV region default locations
+const DMV_LOCATIONS = [
+  "Washington, DC",
+  "Arlington, VA",
+  "Alexandria, VA",
+  "Baltimore, MD",
+  "Silver Spring, MD",
+  "Bethesda, MD"
 ]
 
 export default function AlertsPage() {
-  const [alerts, setAlerts] = useState<AlertSubscription[]>(mockAlerts)
+  const [alerts, setAlerts] = useState<AlertSubscription[]>([])
+  const [currentAQ, setCurrentAQ] = useState<CurrentAQ | null>(null)
+  const [loading, setLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [activeAlerts, setActiveAlerts] = useState<string[]>([])
   const [formData, setFormData] = useState({
-    location: "",
+    location: "Washington, DC",
     email: "",
     threshold: "100",
   })
+
+  // Fetch current AQ for monitoring
+  useEffect(() => {
+    const fetchCurrentAQ = async () => {
+      if (alerts.length === 0) return
+      
+      // Check first active alert location
+      const activeAlert = alerts.find(a => a.isActive)
+      if (!activeAlert) return
+
+      try {
+        const res = await fetch(`/api/current-aq?city=${encodeURIComponent(activeAlert.location)}`)
+        const data = await res.json()
+        if (data.current) {
+          setCurrentAQ(data.current)
+          
+          // Check if any thresholds exceeded
+          const maxAQI = Math.max(
+            data.current.pm25?.aqi || 0,
+            data.current.o3?.aqi || 0,
+            data.current.no2?.aqi || 0
+          )
+          
+          const triggered = alerts
+            .filter(a => a.isActive && maxAQI >= a.threshold)
+            .map(a => a.id)
+          
+          setActiveAlerts(triggered)
+        }
+      } catch (err) {
+        console.error("Failed to fetch current AQ:", err)
+      }
+    }
+
+    fetchCurrentAQ()
+    // Refresh every 10 minutes
+    const interval = setInterval(fetchCurrentAQ, 10 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [alerts])
 
   const handleCreateAlert = () => {
     const newAlert: AlertSubscription = {
@@ -80,16 +120,27 @@ export default function AlertsPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">Air Quality Alerts</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Get notified when air quality reaches unhealthy levels</p>
+          <p className="text-sm sm:text-base text-muted-foreground">Real-time monitoring with email notifications</p>
         </div>
+
+        {/* Active Alert Warning */}
+        {activeAlerts.length > 0 && (
+          <Alert className="mb-4 sm:mb-6 border-red-500 bg-red-50">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertTitle className="text-sm sm:text-base text-red-900">Air Quality Alert Triggered!</AlertTitle>
+            <AlertDescription className="text-sm text-red-800">
+              {activeAlerts.length} of your alert{activeAlerts.length > 1 ? 's have' : ' has'} been triggered. 
+              Current AQI exceeds your threshold. Check your email for details.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Info Alert */}
         <Alert className="mb-4 sm:mb-6">
           <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle className="text-sm sm:text-base">Stay Protected</AlertTitle>
+          <AlertTitle className="text-sm sm:text-base">Real-Time Protection</AlertTitle>
           <AlertDescription className="text-sm">
-            Set up alerts to receive email notifications when air quality in your area exceeds your chosen threshold.
-            Perfect for protecting sensitive family members.
+            Alerts use live WeatherAPI data refreshed every 10 minutes. Set custom thresholds to protect sensitive family members.
           </AlertDescription>
         </Alert>
 
@@ -115,12 +166,19 @@ export default function AlertsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                placeholder="Enter city or zip code"
+              <Select
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
+                onValueChange={(value) => setFormData({ ...formData, location: value })}
+              >
+                <SelectTrigger id="location">
+                  <SelectValue placeholder="Select DMV location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DMV_LOCATIONS.map((loc) => (
+                    <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
