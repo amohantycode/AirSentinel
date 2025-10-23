@@ -117,12 +117,18 @@ export function MapWrapper({
         {/* Hover tooltip */}
         {hoveredLocation && (
           <div className="absolute top-4 left-4 pointer-events-none">
-            <Card className="p-3 shadow-lg">
-              <div className="text-sm font-semibold">{hoveredLocation.name}</div>
-              <div className="text-2xl font-bold" style={{ color: getAQIColor(hoveredLocation.aqi) }}>
+            <Card className="p-2 shadow-lg bg-white/95 backdrop-blur">
+              <div className="text-sm font-semibold text-gray-900">{hoveredLocation.name}</div>
+              <div 
+                className="text-xl font-bold px-2 py-0.5 rounded inline-block mt-1" 
+                style={{ 
+                  backgroundColor: getAQIColor(hoveredLocation.aqi),
+                  color: 'white'
+                }}
+              >
                 AQI {hoveredLocation.aqi}
               </div>
-              <div className="text-xs text-muted-foreground">{getAQILevelName(hoveredLocation.aqi)}</div>
+              <div className="text-xs text-gray-700 mt-1">{getAQILevelName(hoveredLocation.aqi)}</div>
             </Card>
           </div>
         )}
@@ -130,23 +136,29 @@ export function MapWrapper({
         {/* Selected location details */}
         {selectedLocation && (
           <div className="absolute bottom-4 left-4 right-4">
-            <Card className="p-4 shadow-lg">
-              <div className="flex items-start justify-between gap-4">
+            <Card className="p-3 shadow-lg bg-white/95 backdrop-blur">
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{selectedLocation.name}</h3>
+                  <h3 className="font-semibold text-base text-gray-900">{selectedLocation.name}</h3>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-bold" style={{ color: getAQIColor(selectedLocation.aqi) }}>
+                    <span 
+                      className="text-2xl font-bold px-2 py-0.5 rounded" 
+                      style={{ 
+                        backgroundColor: getAQIColor(selectedLocation.aqi),
+                        color: 'white'
+                      }}
+                    >
                       {selectedLocation.aqi}
                     </span>
-                    <span className="text-sm text-muted-foreground">{getAQILevelName(selectedLocation.aqi)}</span>
+                    <span className="text-sm font-medium text-gray-700">{getAQILevelName(selectedLocation.aqi)}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Lat: {selectedLocation.lat.toFixed(4)}, Lon: {selectedLocation.lon.toFixed(4)}
+                  <p className="text-xs text-gray-600 mt-1">
+                    {selectedLocation.lat.toFixed(4)}, {selectedLocation.lon.toFixed(4)}
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedLocation(null)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-gray-500 hover:text-gray-900 text-lg font-medium leading-none"
                   aria-label="Close"
                 >
                   ✕

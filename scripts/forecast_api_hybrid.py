@@ -13,9 +13,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from joblib import load
 
-ROOT = "/Users/shauryamallampati/Desktop/congressionalapp"
-MODEL_DIR = os.path.join(ROOT, "models", "daily_7d")
-DATA_DIR = os.path.join(ROOT, "data")
+# Use relative paths from script location
+SCRIPT_DIR = Path(__file__).parent.resolve()
+ROOT = SCRIPT_DIR.parent
+MODEL_DIR = ROOT / "models" / "daily_7d"
+DATA_DIR = ROOT / "data"
 
 # EPA AQI calculation
 PM25_BP = [
@@ -90,14 +92,14 @@ def fetch_current_aq(city, key):
 
 def load_historical_data(location_filter=None, days=30):
     """Load historical data from local CSV (real EPA data)."""
-    csv_path = os.path.join(DATA_DIR, "combined-historical-2020-2025.csv")
+    csv_path = DATA_DIR / "combined-historical-2020-2025.csv"
     
-    if not os.path.exists(csv_path):
+    if not csv_path.exists():
         print(f"ERROR: {csv_path} not found", file=sys.stderr)
         return pd.DataFrame()
     
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(str(csv_path))
         
         # Parse date column safely
         df["date"] = pd.to_datetime(df["date"], errors="coerce")

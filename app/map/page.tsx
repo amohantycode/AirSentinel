@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { MapWrapper } from "@/components/map-wrapper"
 import { AQICard } from "@/components/aqi-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,6 +46,22 @@ export default function MapPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isUsingMockData, setIsUsingMockData] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mapCenter, setMapCenter] = useState<[number, number]>([38.9072, -77.0369]) // Default to DC
+  const [mapZoom, setMapZoom] = useState<number>(9)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   // Fetch real data from API
   useEffect(() => {
@@ -91,10 +107,40 @@ export default function MapPage() {
     fetchLocations()
   }, [])
 
+  // Filter locations based on search query
+  const filteredLocations = searchQuery.trim()
+    ? locations.filter((loc) =>
+        loc.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : []
+
+  // Handle search selection
+  const handleSearchSelect = (location: Location) => {
+    setSearchQuery(location.name)
+    setSelectedLocation(location)
+    setMapCenter([location.lat, location.lon])
+    setMapZoom(12) // Zoom in when location is selected
+    setShowSuggestions(false)
+  }
+
+  // Handle search button click
+  const handleSearch = () => {
+    if (filteredLocations.length > 0) {
+      handleSearchSelect(filteredLocations[0])
+    }
+  }
+
+  // Handle Enter key in search
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && filteredLocations.length > 0) {
+      handleSearchSelect(filteredLocations[0])
+    }
+  }
+
   return (
     <div className="w-full">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-6 sm:py-8">
-        <div className="mb-6 sm:mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-4 sm:py-6">
+        <div className="mb-4">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">DMV Air Quality Map</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             {isUsingMockData 
@@ -105,7 +151,7 @@ export default function MapPage() {
 
         {/* Warning Alert for Mock Data */}
         {isUsingMockData && (
-          <Alert className="mb-4 sm:mb-6">
+          <Alert className="mb-3">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="text-sm">
               <strong>Sample Data:</strong> Currently displaying mock data. To see real air quality data, please configure 
@@ -116,23 +162,25 @@ export default function MapPage() {
 
         {/* Error Alert */}
         {error && !isUsingMockData && (
-          <Alert className="mb-4 sm:mb-6" variant="destructive">
+          <Alert className="mb-3" variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="text-sm">{error}</AlertDescription>
           </Alert>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Map Section */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-3">
             <Card>
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-lg sm:text-xl">Interactive Map</CardTitle>
                 <CardDescription className="text-sm">Click on any marker to view detailed air quality information</CardDescription>
               </CardHeader>
-              <CardContent className="p-3 sm:p-6">
+              <CardContent className="p-3">
                 <MapWrapper
                   locations={locations}
+                  center={mapCenter}
+                  zoom={mapZoom}
                   height="500px"
                   onLocationClick={(location) => setSelectedLocation(location)}
                 />
@@ -141,23 +189,83 @@ export default function MapPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Search */}
             <Card>
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-base sm:text-lg">Search Location</CardTitle>
               </CardHeader>
-              <CardContent className="p-3 sm:p-6 pt-0">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter city or zip code..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="text-sm"
-                  />
-                  <Button size="icon" className="flex-shrink-0">
-                    <Search className="h-4 w-4" />
-                  </Button>
+              <CardContent className="p-3 pt-0">
+                <div className="relative" ref={searchRef}>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Try: Washington DC, Baltimore, Arlington..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        setShowSuggestions(true)
+                      }}
+                      onKeyDown={handleSearchKeyDown}
+                      onFocus={() => setShowSuggestions(true)}
+                      className="text-sm"
+                    />
+                    <Button 
+                      size="icon" 
+                      className="flex-shrink-0"
+                      onClick={handleSearch}
+                      disabled={filteredLocations.length === 0}
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {/* Search Suggestions */}
+                  {showSuggestions && searchQuery && filteredLocations.length > 0 && (
+                    <Card className="absolute z-10 w-full mt-1 shadow-lg">
+                      <CardContent className="p-2">
+                        <div className="space-y-1">
+                          {filteredLocations.slice(0, 5).map((location, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleSearchSelect(location)}
+                              className="w-full flex items-center justify-between p-2 rounded hover:bg-muted transition-colors text-left"
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-sm font-medium">{location.name}</span>
+                              </div>
+                              <span className="text-sm font-bold">AQI {location.aqi}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {/* No results message */}
+                  {searchQuery && filteredLocations.length === 0 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      No locations found. Try searching for nearby cities.
+                    </p>
+                  )}
+                  
+                  {/* Popular locations prompt */}
+                  {!searchQuery && (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground mb-1">Popular searches:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {locations.slice(0, 4).map((location, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleSearchSelect(location)}
+                            className="text-xs px-2 py-1 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                          >
+                            {location.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -175,7 +283,7 @@ export default function MapPage() {
 
           {/* Location List */}
           <Card>
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-2">
               <CardTitle className="text-base sm:text-lg">All Locations</CardTitle>
               <CardDescription className="text-sm">
                 {isLoading 
@@ -183,13 +291,13 @@ export default function MapPage() {
                   : `Current AQI readings (${locations.length} locations)`}
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-3 sm:p-6 pt-0">
+            <CardContent className="p-3 pt-0">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
-                <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto pr-2">
+                <div className="space-y-1.5 max-h-96 overflow-y-auto pr-2">
                   {locations.map((location, index) => (
                     <button
                       key={`${location.name}-${index}`}

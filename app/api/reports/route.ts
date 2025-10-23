@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     const { location_name, lat, lon, category, severity } = body
-    if (!location_name || !lat || !lon || !category || !severity) {
+    if (!location_name || lat === undefined || lat === null || lon === undefined || lon === null || !category || !severity) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
     }
 

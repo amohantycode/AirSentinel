@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { execSync } from "child_process"
+import { spawnSync } from "child_process"
 import path from "path"
 import fs from "fs"
 
@@ -112,11 +112,21 @@ export async function GET(request: NextRequest) {
 
     let output
     try {
-      output = execSync(`${pythonPath} ${scriptPath} "${city}" "${WEATHER_API_KEY}"`, {
+      // Use spawnSync with array args to avoid shell escaping issues
+      const result = spawnSync(pythonPath, [scriptPath, city, WEATHER_API_KEY], {
         encoding: "utf-8",
         timeout: 120000, // 2 minutes max wait
-        stdio: ["pipe", "pipe", "pipe"],
       })
+      
+      if (result.error) {
+        throw result.error
+      }
+      
+      if (result.status !== 0) {
+        throw new Error(result.stderr || `Process exited with code ${result.status}`)
+      }
+      
+      output = result.stdout
     } catch (execError) {
       const error = execError as { message: string; stderr?: Buffer }
       console.error("[Forecast API] Python execution failed:", error.message)

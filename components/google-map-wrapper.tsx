@@ -135,25 +135,21 @@ export function GoogleMapWrapper({
       // Create info window
       const infoWindow = new google.maps.InfoWindow({
         content: `
-          <div style="padding: 8px; min-width: 150px;">
-            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">${location.name}</h3>
-            <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="padding: 4px 8px; font-family: system-ui, -apple-system, sans-serif;">
+            <h3 style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; color: #1a1a1a;">${location.name}</h3>
+            <div style="display: flex; align-items: center; gap: 6px;">
               <div style="
-                width: 40px; 
-                height: 40px; 
-                border-radius: 8px; 
+                padding: 2px 8px;
+                border-radius: 4px; 
                 background-color: ${color}; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center;
                 color: white;
                 font-weight: bold;
-                font-size: 16px;
+                font-size: 14px;
               ">
                 ${location.aqi}
               </div>
-              <div style="font-size: 12px; color: #666;">
-                Air Quality Index
+              <div style="font-size: 10px; color: #4a4a4a; font-weight: 500;">
+                AQI
               </div>
             </div>
           </div>

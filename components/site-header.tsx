@@ -1,26 +1,25 @@
 "use client"
 
 import Link from "next/link"
-import { Wind, Map, TrendingUp, Bell, FileText, BarChart3, Info, Menu } from "lucide-react"
+import { Wind, Map, TrendingUp, Bell, FileText, BarChart3, Info, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 
 export function SiteHeader() {
-  const [open, setOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const NavLinks = () => (
     <>
       <Link
         href="/"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50"
       >
         Home
       </Link>
       <Link
         href="/map"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <Map className="h-4 w-4" />
@@ -28,7 +27,7 @@ export function SiteHeader() {
       </Link>
       <Link
         href="/forecast"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <TrendingUp className="h-4 w-4" />
@@ -36,7 +35,7 @@ export function SiteHeader() {
       </Link>
       <Link
         href="/alerts"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <Bell className="h-4 w-4" />
@@ -44,7 +43,7 @@ export function SiteHeader() {
       </Link>
       <Link
         href="/report"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <FileText className="h-4 w-4" />
@@ -52,7 +51,7 @@ export function SiteHeader() {
       </Link>
       <Link
         href="/impact"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <BarChart3 className="h-4 w-4" />
@@ -60,14 +59,14 @@ export function SiteHeader() {
       </Link>
       <Link
         href="/resources"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50"
       >
         Resources
       </Link>
       <Link
         href="/about"
-        onClick={() => setOpen(false)}
+        onClick={() => setMobileMenuOpen(false)}
         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50 flex items-center gap-1.5"
       >
         <Info className="h-4 w-4" />
@@ -90,34 +89,28 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 flex-wrap justify-center flex-1">
             <NavLinks />
           </nav>
 
-          {/* Mobile Menu */}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
-              <div className="flex flex-col gap-4 mt-8">
-                <Link href="/" className="flex items-center gap-3 font-bold text-xl pb-4 border-b">
-                  <Wind className="h-6 w-6 text-primary" />
-                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                    AirAware
-                  </span>
-                </Link>
-                <nav className="flex flex-col gap-1">
-                  <NavLinks />
-                </nav>
-              </div>
-            </SheetContent>
-          </Sheet>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
+
+        {mobileMenuOpen && (
+          <nav className="lg:hidden border-t border-border/40 py-4">
+            <div className="flex flex-col gap-2">
+              <NavLinks />
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   )
