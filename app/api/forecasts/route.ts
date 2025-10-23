@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { execSync } from "child_process"
 import path from "path"
+import fs from "fs"
 
 /**
  * GET /api/forecasts
@@ -104,7 +105,10 @@ export async function GET(request: NextRequest) {
 
     // Call Python HYBRID forecast script (real WeatherAPI current + local EPA history)
     const scriptPath = path.join(process.cwd(), "scripts", "forecast_api_hybrid.py")
-    const pythonPath = path.join(process.cwd(), "venv", "bin", "python3")
+    const venvPython = path.join(process.cwd(), "venv", "bin", "python3")
+    
+    // Use venv python if it exists, otherwise fall back to system python3
+    const pythonPath = fs.existsSync(venvPython) ? venvPython : "python3"
 
     let output
     try {
