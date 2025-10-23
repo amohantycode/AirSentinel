@@ -4,16 +4,14 @@ import { ForecastComponent } from "@/components/forecast-component"
 
 export default function ForecastPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 py-8">
-      <div className="container mx-auto max-w-6xl px-4">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">Air Quality Forecasting</h1>
-          <p className="mt-2 text-gray-600">
-            7-day predictions for PM2.5, Ozone, and NO₂ powered by machine learning
-          </p>
-        </div>
-        <ForecastComponent />
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Air Quality Forecasting</h1>
+        <p className="text-muted-foreground">
+          7-day predictions for PM2.5, Ozone, and NO₂ powered by machine learning
+        </p>
       </div>
+      <ForecastComponent />
     </div>
   )
 }

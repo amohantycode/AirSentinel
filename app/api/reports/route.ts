@@ -7,25 +7,33 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "approved"
     const limit = Number.parseInt(searchParams.get("limit") || "20")
 
-    // Mock data - replace with actual Supabase query
-    const mockReports = [
-      {
-        id: "1",
-        location_name: "Downtown LA",
-        lat: 34.0407,
-        lon: -118.2468,
-        category: "smoke",
-        severity: "moderate",
-        description: "Visible smoke from nearby wildfires affecting visibility",
-        status: "approved",
-        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ success: false, error: "Supabase configuration missing" }, { status: 500 })
+    }
+
+    // Fetch from Supabase
+    const url = `${supabaseUrl}/rest/v1/reports?status=eq.${status}&order=created_at.desc&limit=${limit}`
+    const response = await fetch(url, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
       },
-    ]
+    })
+
+    if (!response.ok) {
+      throw new Error(`Supabase request failed: ${response.statusText}`)
+    }
+
+    const data = await response.json()
 
     return NextResponse.json({
       success: true,
-      data: mockReports.slice(0, limit),
-      count: mockReports.length,
+      data: data || [],
+      count: data?.length || 0,
     })
   } catch (error) {
     console.error("[v0] Error fetching reports:", error)
@@ -52,18 +60,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid category or severity" }, { status: 400 })
     }
 
-    // Mock response - replace with actual Supabase insert
-    const newReport = {
-      id: Date.now().toString(),
-      ...body,
-      status: "pending",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ success: false, error: "Supabase configuration missing" }, { status: 500 })
     }
+
+    // Insert into Supabase
+    const url = `${supabaseUrl}/rest/v1/reports`
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify({
+        ...body,
+        status: "pending",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Supabase request failed: ${response.statusText}`)
+    }
+
+    const data = await response.json()
 
     return NextResponse.json({
       success: true,
-      data: newReport,
+      data: data[0] || data,
     })
   } catch (error) {
     console.error("[v0] Error creating report:", error)

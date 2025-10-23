@@ -95,41 +95,28 @@ export function SiteHeader() {
             <NavLinks />
           </nav>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden sm:flex border-primary/30 hover:border-primary hover:bg-primary/10 bg-transparent"
-            >
-              Sign In
-            </Button>
-
-            {/* Mobile Menu */}
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[350px]">
-                <div className="flex flex-col gap-4 mt-8">
-                  <Link href="/" className="flex items-center gap-3 font-bold text-xl pb-4 border-b">
-                    <Wind className="h-6 w-6 text-primary" />
-                    <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                      AirAware
-                    </span>
-                  </Link>
-                  <nav className="flex flex-col gap-1">
-                    <NavLinks />
-                  </nav>
-                  <Button variant="outline" className="mt-4 border-primary/30 hover:border-primary hover:bg-primary/10">
-                    Sign In
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+          {/* Mobile Menu */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+              <div className="flex flex-col gap-4 mt-8">
+                <Link href="/" className="flex items-center gap-3 font-bold text-xl pb-4 border-b">
+                  <Wind className="h-6 w-6 text-primary" />
+                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                    AirAware
+                  </span>
+                </Link>
+                <nav className="flex flex-col gap-1">
+                  <NavLinks />
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
