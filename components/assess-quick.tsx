@@ -8,9 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Loader2 } from "lucide-react"
+import LocationInput from "./location-input"
+import BestTimeChart from "./best-time-chart"
 
 export default function AssessQuick() {
   const [city, setCity] = useState("Washington, DC")
+  const [location, setLocation] = useState<{ label: string; lat: number; lon: number } | null>(null)
   const [start, setStart] = useState<string>(new Date().toISOString().slice(0, 16)) // yyyy-MM-ddTHH:mm
   const [duration, setDuration] = useState(60)
   const [intensity, setIntensity] = useState("moderate")
@@ -26,7 +29,7 @@ export default function AssessQuick() {
     setResult(null)
     try {
       const params = new URLSearchParams({
-        city,
+        city: location ? `${location.lat},${location.lon}` : city,
         start: new Date(start).toISOString(),
         durationMin: String(duration),
         intensity,
@@ -52,8 +55,9 @@ export default function AssessQuick() {
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>City</Label>
-            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Washington, DC" />
+            <Label>Location</Label>
+            <LocationInput value={location} onChange={setLocation} placeholder="e.g., Richmond, VA or Virginia" />
+            <p className="text-xs text-muted-foreground">Tip: You can also type coordinates like 38.9072,-77.0369</p>
           </div>
           <div className="space-y-2">
             <Label>Start Time</Label>
@@ -131,6 +135,16 @@ export default function AssessQuick() {
                 ))}
               </ul>
             </div>
+
+            {/* Best time of day visualization for the selected date/location using ML daily forecast */}
+            <BestTimeChart
+              city={city}
+              date={new Date(start).toISOString().slice(0,10)}
+              durationMin={duration}
+              intensity={intensity}
+              sensitivity={sensitivity}
+              indoors={indoors}
+            />
           </div>
         )}
       </CardContent>
