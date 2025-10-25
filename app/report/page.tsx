@@ -175,10 +175,10 @@ export default function ReportPage() {
       )}
 
       {/* Info Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
               <Users className="h-8 w-8 text-primary" />
               <div>
                 <div className="text-2xl font-bold">{reports.filter((r) => r.status === "approved").length}</div>
@@ -188,8 +188,8 @@ export default function ReportPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
               <Clock className="h-8 w-8 text-primary" />
               <div>
                 <div className="text-2xl font-bold">{reports.filter((r) => r.status === "pending").length}</div>
@@ -199,8 +199,8 @@ export default function ReportPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
               <AlertTriangle className="h-8 w-8 text-primary" />
               <div>
                 <div className="text-2xl font-bold">

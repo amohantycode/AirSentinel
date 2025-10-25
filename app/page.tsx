@@ -2,8 +2,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { AQICard } from "@/components/aqi-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Map, TrendingUp, Bell, Users, Wind, AlertTriangle, ArrowRight, Sparkles } from "lucide-react"
+import { Map, TrendingUp, Bell, Users, Wind, AlertTriangle, ArrowRight, Sparkles, Leaf } from "lucide-react"
 import { Observation } from "@/lib/types"
+import AssessQuick from "@/components/assess-quick"
 
 async function getLatestObservations() {
   try {
@@ -38,50 +39,41 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Hero Section */}
-      <section className="relative py-16 sm:py-20 md:py-28 lg:py-36 overflow-hidden">
-        {/* Atmospheric background effects */}
-        <div className="absolute inset-0 atmospheric-gradient" />
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 md:w-96 md:h-96 bg-accent/10 rounded-full blur-3xl" />
-
-        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-primary/30">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Real-time Air Quality Monitoring</span>
+      {/* Nature Hero (light theme) */}
+      <section
+        className="relative overflow-hidden"
+        style={{
+          background:
+            "radial-gradient(1200px 600px at 10% 0%, rgba(56,189,248,0.15), transparent 60%), radial-gradient(1000px 500px at 90% 20%, rgba(16,185,129,0.12), transparent 60%), linear-gradient(180deg, #f7fbff, #f0fbf7)",
+        }}
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-16 sm:py-20 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="text-gray-900">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-200 bg-white/70 shadow-sm">
+                <Leaf className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-medium text-emerald-700">Personalized Health Decisions</span>
+              </div>
+              <h1 className="mt-4 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+                AirSentinel: Plan safer outdoor time
+              </h1>
+              <p className="mt-4 text-lg text-gray-600 max-w-xl">
+                Not just AQI numbers. Get a clear recommendation for your activity—delay, shorten, or move indoors—to
+                reduce exposure for you or your family.
+              </p>
+              <div className="flex gap-3 pt-5">
+                <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700">
+                  <Link href="#assess">Assess my activity</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/map">
+                    <Map className="mr-2 h-5 w-5" /> Explore map
+                  </Link>
+                </Button>
+              </div>
             </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance leading-tight">
-              Breathe Easier with{" "}
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                AirAware
-              </span>
-            </h1>
-
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-balance max-w-2xl mx-auto leading-relaxed px-4">
-              Monitor local air quality, get AI-powered forecasts, and receive intelligent alerts to protect your
-              family's health.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 md:pt-6 px-4">
-              <Button size="lg" asChild className="glow-primary text-base h-12 px-8">
-                <Link href="/map">
-                  <Map className="mr-2 h-5 w-5" />
-                  View Live Map
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="border-primary/30 hover:border-primary hover:bg-primary/10 text-base h-12 px-8 bg-transparent"
-              >
-                <Link href="/alerts">
-                  <Bell className="mr-2 h-5 w-5" />
-                  Set Up Alerts
-                </Link>
-              </Button>
+            <div id="assess" className="bg-white/80 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur">
+              <AssessQuick />
             </div>
           </div>
         </div>
@@ -146,10 +138,8 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/20 to-transparent" />
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Why Choose AirAware?</h2>
-            <p className="text-lg text-muted-foreground">
-              Comprehensive air quality monitoring for healthier communities
-            </p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Why Choose AirSentinel?</h2>
+            <p className="text-lg text-muted-foreground">Practical guidance to keep your plans and cut exposure</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">

@@ -9,8 +9,8 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "AirAware - Real-time Air Quality Monitoring",
-  description: "Monitor local air quality, get forecasts, and receive alerts for healthier communities.",
+  title: "AirSentinel — Smarter, Safer Air Decisions",
+  description: "Personalized recommendations to reduce exposure: delay, shorten, or move indoors.",
   generator: "v0.app",
 }
 

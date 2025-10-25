@@ -10,32 +10,29 @@ interface AQIBadgeProps {
   className?: string
 }
 
-export function AQIBadge({ aqi, size = "md", showLabel = true, className }: AQIBadgeProps) {
-  const level = getAQILevel(aqi)
+export function AQIBadge({ aqi, size = "md", className, showLabel = true }: AQIBadgeProps) {
+  const aqiLevel = getAQILevel(aqi)
+  const { color, level } = aqiLevel
 
   const sizeClasses = {
-    sm: "w-12 h-12 text-sm",
-    md: "w-16 h-16 text-lg",
-    lg: "w-24 h-24 text-2xl",
-    xl: "w-32 h-32 text-4xl",
+    sm: "text-xs px-2 py-0.5",
+    md: "text-sm px-3 py-1",
+    lg: "text-base px-4 py-1.5",
+    xl: "text-lg px-5 py-2",
   }
 
   return (
-    <div className={cn("flex flex-col items-center gap-2", className)}>
-      <div
-        className={cn("rounded-full flex items-center justify-center font-bold shadow-lg", sizeClasses[size])}
-        style={{
-          backgroundColor: level.color,
-          color: level.textColor,
-        }}
-      >
-        {Math.round(aqi)}
-      </div>
-      {showLabel && (
-        <div className="text-center">
-          <div className="font-semibold text-sm">{level.level}</div>
-        </div>
+    <div
+      className={cn(
+        "inline-flex items-center justify-center font-semibold rounded-md border-0 text-white",
+        sizeClasses[size],
+        className,
       )}
+      style={{ backgroundColor: color }}
+      role="status"
+      aria-label={`Air Quality Index: ${aqi}, ${level}`}
+    >
+      {showLabel ? `${aqi} - ${level}` : aqi}
     </div>
   )
 }

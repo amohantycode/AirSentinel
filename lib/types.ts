@@ -1,4 +1,4 @@
-// TypeScript types for AirAware application
+// TypeScript types for AirSentinel application
 
 export interface Observation {
   id: string

@@ -1,4 +1,4 @@
--- AirAware 2.0 Database Schema
+-- AirSentinel Database Schema
 -- Creates all tables for air quality monitoring system
 
 -- Enable UUID extension
