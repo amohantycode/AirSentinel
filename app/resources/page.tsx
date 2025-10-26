@@ -14,31 +14,43 @@ export default function ResourcesPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <BookOpen className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Understanding AQI</CardTitle>
-            <CardDescription>Learn how air quality is measured and what the numbers mean</CardDescription>
-          </CardHeader>
-        </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <Heart className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Health Effects</CardTitle>
-            <CardDescription>Understand how air pollution affects your health</CardDescription>
-          </CardHeader>
-        </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <Home className="h-8 w-8 text-primary mb-2" />
-            <CardTitle className="text-lg">Protection Tips</CardTitle>
-            <CardDescription>Practical steps to reduce exposure and stay safe</CardDescription>
-          </CardHeader>
-        </Card>
+        <Link href="#understanding-aqi">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <CardHeader>
+              <BookOpen className="h-8 w-8 text-primary mb-2" />
+              <CardTitle className="text-lg">Understanding AQI</CardTitle>
+              <CardDescription>Learn how air quality is measured and what the numbers mean</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href="https://www.who.int/teams/environment-climate-change-and-health/air-quality-energy-and-health/health-impacts" target="_blank" rel="noopener noreferrer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <CardHeader>
+              <Heart className="h-8 w-8 text-primary mb-2" />
+              <CardTitle className="text-lg flex items-center gap-2">
+                Health Effects
+                <ExternalLink className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>Understand how air pollution affects your health</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href="https://www.lung.org/clean-air/outdoors/10-tips-to-protect-yourself" target="_blank" rel="noopener noreferrer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <CardHeader>
+              <Home className="h-8 w-8 text-primary mb-2" />
+              <CardTitle className="text-lg flex items-center gap-2">
+                Protection Tips
+                <ExternalLink className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>Practical steps to reduce exposure and stay safe</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
 
       {/* Understanding AQI */}
-      <Card className="mb-6">
+      <Card className="mb-6" id="understanding-aqi">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="h-6 w-6" />

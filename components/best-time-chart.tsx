@@ -58,19 +58,42 @@ export default function BestTimeChart({ city, date, durationMin, intensity, sens
   }, [data])
 
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 border-t-2 border-t-primary/20">
       <CardHeader>
-  <CardTitle>Best Time on {date}</CardTitle>
+        <CardTitle className="text-base">⏰ Best Time on {date}</CardTitle>
       </CardHeader>
       <CardContent>
-        {loading && <p className="text-sm text-muted-foreground">Loading hourly forecast…</p>}
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {data && (
-          <div className="space-y-3">
-            <div className="text-sm">
-              <p className="font-medium">{data.recommendation.label}</p>
-              <p className="text-muted-foreground">≈{data.recommendation.reductionPct}% lower exposure vs worst window · Mean {data.recommendation.meanConc} µg/m³</p>
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="text-sm text-muted-foreground mt-2">Loading hourly forecast…</p>
             </div>
+          </div>
+        )}
+        
+        {error && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <p className="text-sm text-amber-800 font-medium">⚠️ Could not load hourly data</p>
+            <p className="text-sm text-amber-700 mt-1">{error}</p>
+            <p className="text-xs text-amber-600 mt-2">Using daily forecast average instead.</p>
+          </div>
+        )}
+        
+        {data && data.hours && data.hours.length > 0 && (
+          <div className="space-y-3">
+            {data.recommendation && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="font-medium text-sm text-blue-900">{data.recommendation.label}</p>
+                <p className="text-blue-700 text-sm mt-1">
+                  ≈{data.recommendation.reductionPct}% lower exposure vs worst window
+                </p>
+                <p className="text-blue-600 text-xs mt-1">
+                  Mean concentration: {data.recommendation.meanConc} µg/m³
+                </p>
+              </div>
+            )}
+            
             <ChartContainer
               config={{ pm25: { label: "PM2.5 (µg/m³)", color: "hsl(var(--primary))" } }}
               className="w-full h-64"
@@ -90,17 +113,40 @@ export default function BestTimeChart({ city, date, durationMin, intensity, sens
               </ResponsiveContainer>
             </ChartContainer>
 
-            <div>
-              <p className="text-sm font-medium">Top options</p>
-              <ul className="text-sm text-muted-foreground list-disc pl-5">
-                {data.windows.map((w: any) => (
-                  <li key={w.startTime}>
-                    {w.startTime} → {w.endTime}: mean {w.mean} µg/m³ · −{w.reductionPct}% vs worst
-                  </li>
-                ))}
-              </ul>
-              {data.note && <p className="text-xs text-muted-foreground mt-2">{data.note}</p>}
-            </div>
+            {data.windows && data.windows.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-2">🏆 Top Time Windows</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  {data.windows.map((w: any, idx: number) => (
+                    <li key={w.startTime} className="flex justify-between items-center py-1">
+                      <span>
+                        {idx === 0 && "🥇 "}
+                        {idx === 1 && "🥈 "}
+                        {idx === 2 && "🥉 "}
+                        {w.startTime} → {w.endTime}
+                      </span>
+                      <span className="text-emerald-600 font-medium">−{w.reductionPct}%</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-500 mt-2">
+                  Mean: {data.windows[0]?.mean} µg/m³
+                </p>
+              </div>
+            )}
+
+            {data.note && (
+              <p className="text-xs text-gray-500 italic bg-gray-50 p-2 rounded">
+                ℹ️ {data.note}
+              </p>
+            )}
+          </div>
+        )}
+
+        {!loading && !error && data && (!data.hours || data.hours.length === 0) && (
+          <div className="bg-gray-50 border rounded-lg p-4 text-center">
+            <p className="text-sm text-gray-600">No hourly data available for this date.</p>
+            <p className="text-xs text-gray-500 mt-1">Try a date within the next 3 days.</p>
           </div>
         )}
       </CardContent>

@@ -181,7 +181,7 @@ export default function ReportPage() {
             <div className="flex items-center gap-2">
               <Users className="h-8 w-8 text-primary" />
               <div>
-                <div className="text-2xl font-bold">{reports.filter((r) => r.status === "approved").length}</div>
+                <div className="text-2xl font-bold">{reports.length}</div>
                 <div className="text-sm text-muted-foreground">Active Reports</div>
               </div>
             </div>

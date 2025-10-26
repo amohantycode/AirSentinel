@@ -58,8 +58,7 @@ export default async function HomePage() {
                 AirSentinel: Plan safer outdoor time
               </h1>
               <p className="mt-4 text-lg text-gray-600 max-w-xl">
-                Not just AQI numbers. Get a clear recommendation for your activity—delay, shorten, or move indoors—to
-                reduce exposure for you or your family.
+                Using advanced CatBoost machine learning models, we analyze your location, activity, and health factors to generate personalized recommendations—delay, shorten, or move indoors—to reduce exposure for you or your family. Every prediction is tailored to your specific situation.
               </p>
               <div className="flex gap-3 pt-5">
                 <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700">
