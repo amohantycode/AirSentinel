@@ -3,9 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AQIChart } from "@/components/aqi-chart"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BarChart3, TrendingDown, TrendingUp, Users, AlertTriangle, Calendar } from "lucide-react"
+import { BarChart3, TrendingDown, TrendingUp, Users, Calendar } from "lucide-react"
 import { useState, useEffect } from "react"
-import { Badge } from "@/components/ui/badge"
+// import { Badge } from "@/components/ui/badge" // not used
 
 // DMV Region locations
 const DMV_LOCATIONS = ["Washington, DC", "Arlington, VA", "Baltimore, MD", "Silver Spring, MD"]
@@ -39,18 +39,20 @@ export default function ImpactPage() {
   const goodDays = historicalData?.summary?.goodDays || 0
   const moderateDays = historicalData?.summary?.moderateDays || 0
   const unhealthyDays = historicalData?.summary?.unhealthyDays || 0
+  // Days with AQI > 100 (Unhealthy for Sensitive Groups or worse)
+  const usgOrWorseDays = Array.isArray(dataPoints)
+    ? dataPoints.filter((d: any) => typeof d?.aqi === "number" && d.aqi > 100).length
+    : 0
   const trend = avgAQI > 75 ? "up" : "down"
   
   // Calculate real population impact
   const totalPopulation = 3900000 // DMV metro area
   const sensitiveGroups = 890000 // ~23% (children, elderly, respiratory conditions)
-  const exposureRate = dataPoints.length > 0 ? unhealthyDays / dataPoints.length : 0
-  const exposedPopulation = Math.round(totalPopulation * exposureRate)
+  // For impact, estimate exposure among sensitive groups on days AQI > 100 (USG+)
+  const exposureRateSensitive = dataPoints.length > 0 ? usgOrWorseDays / dataPoints.length : 0
+  const exposedSensitive = Math.round(sensitiveGroups * exposureRateSensitive)
   
-  // Calculate health alerts based on real data
-  const activeSubscribers = 15392
-  const totalAlerts = unhealthyDays * Math.round(activeSubscribers / 100)
-  const avgResponseTime = 2.3 // Keep baseline for now
+  // Removed Health Alerts card; derived alert metrics not used anymore
   
   // Format for chart with real dates
   const chartData = dataPoints.map((d: { date: string; aqi: number }) => {
@@ -199,102 +201,81 @@ export default function ImpactPage() {
               <span className="text-lg font-bold">{(sensitiveGroups / 1000).toFixed(0)}K</span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-destructive/10">
-              <span className="text-sm font-medium">Exposed to Unhealthy Air</span>
+              <div className="text-sm font-medium">
+                Sensitive Groups Exposed (USG+)
+                <span className="ml-2 text-xs text-muted-foreground">AQI &gt; 100 days</span>
+              </div>
               <span className="text-lg font-bold text-destructive">
-                {exposedPopulation > 1000000 
-                  ? `${(exposedPopulation / 1000000).toFixed(1)}M` 
-                  : `${(exposedPopulation / 1000).toFixed(0)}K`}
+                {exposedSensitive > 1000000
+                  ? `${(exposedSensitive / 1000000).toFixed(1)}M`
+                  : `${Math.max(0, Math.round(exposedSensitive / 1000))}K`}
               </span>
             </div>
           </CardContent>
         </Card>
-
+        {/* Period Breakdown moved here to keep two-column layout on large screens */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              Health Alerts Sent
+              <Calendar className="h-5 w-5" />
+              Period Breakdown
             </CardTitle>
-            <CardDescription>Notifications delivered to protect community health</CardDescription>
+            <CardDescription>Air quality distribution by category</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted">
-              <span className="text-sm font-medium">Total Alerts</span>
-              <span className="text-lg font-bold">{totalAlerts.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted">
-              <span className="text-sm font-medium">Active Subscribers</span>
-              <span className="text-lg font-bold">{activeSubscribers.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10">
-              <span className="text-sm font-medium">Avg Response Time</span>
-              <span className="text-lg font-bold text-primary">{avgResponseTime} min</span>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Good (0-50)</span>
+                  <span className="font-semibold">{goodDays} days</span>
+                </div>
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${dataPoints.length > 0 ? (goodDays / dataPoints.length) * 100 : 0}%`,
+                      backgroundColor: "oklch(0.7 0.15 145)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Moderate (51-100)</span>
+                  <span className="font-semibold">{moderateDays} days</span>
+                </div>
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${dataPoints.length > 0 ? (moderateDays / dataPoints.length) * 100 : 0}%`,
+                      backgroundColor: "oklch(0.75 0.15 85)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Unhealthy (101+)</span>
+                  <span className="font-semibold">{unhealthyDays} days</span>
+                </div>
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${dataPoints.length > 0 ? (unhealthyDays / dataPoints.length) * 100 : 0}%`,
+                      backgroundColor: "oklch(0.6 0.22 25)",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Monthly Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Period Breakdown
-          </CardTitle>
-          <CardDescription>Air quality distribution by category</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Good (0-50)</span>
-                <span className="font-semibold">{goodDays} days</span>
-              </div>
-              <div className="h-3 rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${dataPoints.length > 0 ? (goodDays / dataPoints.length) * 100 : 0}%`,
-                    backgroundColor: "oklch(0.7 0.15 145)",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Moderate (51-100)</span>
-                <span className="font-semibold">{moderateDays} days</span>
-              </div>
-              <div className="h-3 rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${dataPoints.length > 0 ? (moderateDays / dataPoints.length) * 100 : 0}%`,
-                    backgroundColor: "oklch(0.75 0.15 85)",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Unhealthy (101+)</span>
-                <span className="font-semibold">{unhealthyDays} days</span>
-              </div>
-              <div className="h-3 rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${dataPoints.length > 0 ? (unhealthyDays / dataPoints.length) * 100 : 0}%`,
-                    backgroundColor: "oklch(0.6 0.22 25)",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* End Impact Statistics */}
     </div>
   )
 }

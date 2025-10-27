@@ -93,7 +93,7 @@ export default function AssessQuick() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-3 pt-6">
+          <div className="flex items-center gap-3 pt-6 md:ml-4">
             <Switch checked={indoors} onCheckedChange={setIndoors} id="indoors" />
             <Label htmlFor="indoors">Indoors</Label>
           </div>

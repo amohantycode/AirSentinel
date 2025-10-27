@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import fs from "fs"
+import path from "path"
 
 export const dynamic = "force-dynamic"
 
@@ -48,7 +50,7 @@ function getAQICategory(aqi: number): string {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const city = searchParams.get("city") || "Washington"
+    const city = searchParams.get("city") || "Washington, DC"
     const days = parseInt(searchParams.get("days") || "7")
 
     if (![7, 30, 90, 365].includes(days)) {
@@ -76,140 +78,108 @@ export async function GET(request: Request) {
     const historicalData: HistoricalDataPoint[] = []
     const today = new Date()
 
-    // Try to fetch forecast data (free tier supports up to 10 days)
-    const forecastUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}&days=10&aqi=yes`
-    
+    // 1) Try LOCAL EPA historical CSV first (authoritative for DMV)
+    const csvPath = path.join(process.cwd(), "data", "combined-historical-2020-2025.csv")
     try {
-      const forecastResponse = await fetch(forecastUrl)
-      if (forecastResponse.ok) {
-        const forecastData = await forecastResponse.json()
+      if (fs.existsSync(csvPath)) {
+        const raw = fs.readFileSync(csvPath, "utf-8")
+        const lines = raw.split(/\r?\n/)
+        const header = lines.shift() || ""
+        const cols = header.split(",").map((h) => h.trim().toLowerCase())
+        const idxDate = cols.indexOf("date")
+        const idxPollutant = cols.indexOf("pollutant")
+        const idxConc = cols.indexOf("concentration")
+        const idxLocation = cols.indexOf("location")
+        const idxState = cols.indexOf("state")
 
-        // Add forecast days
-        if (forecastData?.forecast?.forecastday) {
-          for (const dayForecast of forecastData.forecast.forecastday) {
-            if (historicalData.length >= days) break
+        const cityLower = city.toLowerCase()
+        const cutoff = new Date(today)
+        cutoff.setDate(cutoff.getDate() - (isNaN(days) ? 7 : days) + 1)
 
-            const dayData = dayForecast.day
-            if (!dayData?.air_quality) continue
+        // Group by date: collect PM2.5 concentrations
+        const byDate: Record<string, number[]> = {}
 
-            const aq = dayData.air_quality
-            const pm25 = aq.pm2_5 || 0
-            const o3 = aq.o3 || 0
-            const no2 = aq.no2 || 0
-            
-            // Skip if no valid PM2.5 data
-            if (pm25 === 0) continue
-            
-            // Calculate AQI from PM2.5 (primary pollutant)
-            const aqiValue = calculatePM25AQI(pm25)
+        for (const line of lines) {
+          if (!line) continue
+          const parts = line.split(",")
+          if (parts.length < Math.max(idxDate, idxPollutant, idxConc, idxLocation, idxState) + 1) continue
+          const dstr = parts[idxDate]
+          const pol = parts[idxPollutant]
+          const concStr = parts[idxConc]
+          const loc = (parts[idxLocation] || "").toLowerCase()
+          const st = (parts[idxState] || "").toLowerCase()
 
-            historicalData.push({
-              date: dayForecast.date,
-              pm25: {
-                value: Math.round(pm25 * 10) / 10,
-                unit: "µg/m³",
-              },
-              o3: {
-                value: parseFloat(o3.toFixed(1)),
-                unit: "ppb",
-              },
-              no2: {
-                value: parseFloat(no2.toFixed(1)),
-                unit: "ppb",
-              },
-              aqi: aqiValue,
-              category: getAQICategory(aqiValue),
-              dominantPollutant: "PM2.5",
-            })
-          }
+          if (pol !== "PM2.5") continue
+          // loose match: either location or state appears in the query string
+          if (!(cityLower.includes(loc) || cityLower.includes(st) || loc.includes(cityLower) || st.includes(cityLower))) continue
+
+          const d = new Date(dstr)
+          if (isNaN(d.getTime())) continue
+          if (d < cutoff || d > today) continue
+
+          const conc = parseFloat(concStr)
+          if (!Number.isFinite(conc)) continue
+
+          const key = d.toISOString().slice(0, 10)
+          byDate[key] = byDate[key] || []
+          byDate[key].push(conc)
         }
 
-        // Also add current day
-        const currentUrl = `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}&aqi=yes`
-        const currentResponse = await fetch(currentUrl)
-        if (currentResponse.ok) {
-          const currentData = await currentResponse.json()
-          if (currentData?.current?.air_quality) {
-            const aq = currentData.current.air_quality
-            const pm25 = aq.pm2_5 || 0
-            const o3 = aq.o3 || 0
-            const no2 = aq.no2 || 0
-
-            // Calculate AQI from PM2.5
-            const aqiValue = calculatePM25AQI(pm25)
-
-            // Add to front (today is first)
-            historicalData.unshift({
-              date: today.toISOString().split("T")[0],
-              pm25: {
-                value: Math.round(pm25 * 10) / 10,
-                unit: "µg/m³",
-              },
-              o3: {
-                value: parseFloat(o3.toFixed(1)),
-                unit: "ppb",
-              },
-              no2: {
-                value: parseFloat(no2.toFixed(1)),
-                unit: "ppb",
-              },
-              aqi: aqiValue,
-              category: getAQICategory(aqiValue),
-              dominantPollutant: "PM2.5",
-            })
-          }
+        // Build daily points sorted ascending
+        const keys = Object.keys(byDate).sort()
+        for (const k of keys) {
+          const vals = byDate[k]
+          if (!vals?.length) continue
+          const mean = vals.reduce((a, b) => a + b, 0) / vals.length
+          const aqiValue = calculatePM25AQI(mean)
+          historicalData.push({
+            date: k,
+            pm25: { value: Math.round(mean * 10) / 10, unit: "µg/m³" },
+            aqi: aqiValue,
+            category: getAQICategory(aqiValue),
+            dominantPollutant: "PM2.5",
+          })
         }
       }
     } catch (err) {
-      console.error("Error fetching forecast data:", err)
+      console.error("Error reading local CSV:", err)
     }
 
-    // If we need more data than what's available (>10 days), generate synthetic historical data
-    // based on seasonal patterns and current conditions
-    if (historicalData.length < days) {
-      const lastAQI = historicalData[historicalData.length - 1]?.aqi || 40
-      const daysNeeded = days - historicalData.length
-
-      for (let i = 1; i <= daysNeeded; i++) {
-        const pastDate = new Date(today)
-        pastDate.setDate(pastDate.getDate() - i)
-
-        // Generate realistic variation: ±15 AQI with seasonal trending
-        const seasonalVariation = Math.sin((pastDate.getTime() / (1000 * 60 * 60 * 24)) / 30) * 10
-        const randomVariation = (Math.random() - 0.5) * 20
-        const variation = seasonalVariation + randomVariation
-
-        const simulatedAQI = Math.max(0, Math.min(300, lastAQI + variation))
-        const pm25Equiv = PM25_BREAKPOINTS.find((bp) => 
-          bp.iLow <= simulatedAQI && simulatedAQI <= bp.iHigh
-        ) || PM25_BREAKPOINTS[0]
-
-        historicalData.push({
-          date: pastDate.toISOString().split("T")[0],
-          pm25: {
-            value: Math.round((pm25Equiv.cLow + (pm25Equiv.cHigh - pm25Equiv.cLow) * 0.5) * 10) / 10,
-            unit: "µg/m³",
-          },
-          o3: {
-            value: parseFloat((Math.random() * 50 + 30).toFixed(1)),
-            unit: "ppb",
-          },
-          no2: {
-            value: parseFloat((Math.random() * 20 + 10).toFixed(1)),
-            unit: "ppb",
-          },
-          aqi: Math.round(simulatedAQI),
-          category: getAQICategory(Math.round(simulatedAQI)),
-          dominantPollutant: "PM2.5",
-        })
+    // 2) If local CSV produced no results, fall back to provider (limited) to avoid blanks
+    if (historicalData.length === 0) {
+      const forecastUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}&days=7&aqi=yes`
+      try {
+        const forecastResponse = await fetch(forecastUrl)
+        if (forecastResponse.ok) {
+          const forecastData = await forecastResponse.json()
+          if (forecastData?.forecast?.forecastday) {
+            for (const dayForecast of forecastData.forecast.forecastday) {
+              const dayData = dayForecast.day
+              const pm25 = dayData?.air_quality?.pm2_5
+              if (!Number.isFinite(pm25)) continue
+              const aqiValue = calculatePM25AQI(pm25)
+              historicalData.push({
+                date: dayForecast.date,
+                pm25: { value: Math.round(pm25 * 10) / 10, unit: "µg/m³" },
+                aqi: aqiValue,
+                category: getAQICategory(aqiValue),
+                dominantPollutant: "PM2.5",
+              })
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Provider fallback failed:", err)
       }
     }
+
+    // 3) Do NOT synthesize artificial history; if less than requested days, just return what we have
 
     // Sort by date ascending (oldest first)
     historicalData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-    // Trim to requested days
-    const data = historicalData.slice(-days)
+  // Trim to requested days (oldest first)
+  const data = historicalData.slice(-days)
 
     // Calculate summary statistics
     const avgAQI = data.length > 0
