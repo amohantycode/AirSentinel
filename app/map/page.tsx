@@ -199,7 +199,7 @@ export default function MapPage() {
                 <div className="relative" ref={searchRef}>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Try: Washington DC, Baltimore, Arlington..."
+                      placeholder="Try: Essex, Baltimore, Arlington..."
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value)

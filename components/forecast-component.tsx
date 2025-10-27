@@ -52,7 +52,7 @@ const POLLUTANT_NAMES: Record<string, string> = {
 }
 
 export function ForecastComponent() {
-  const [city, setCity] = useState("Washington, DC")
+  const [city, setCity] = useState("")
   const [forecast, setForecast] = useState<ForecastData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -103,16 +103,25 @@ export function ForecastComponent() {
             <div>
               <label className="text-sm font-medium">City Name or Coordinates</label>
               <Input
-                placeholder="e.g., Washington, DC or 38.9072,-77.0369"
+                placeholder="Type a city or coordinates (e.g., Washington, DC or 38.9072,-77.0369)"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 disabled={loading}
+                autoFocus
               />
-              <p className="text-xs text-gray-500 mt-1">Try: Washington DC, Baltimore MD, Arlington VA</p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500">Try typing:
+                  <span className="ml-2 font-semibold text-emerald-700">Washington, DC</span>,
+                  <span className="ml-2 font-semibold text-emerald-700">Baltimore, MD</span>,
+                  <span className="ml-2 font-semibold text-emerald-700">Arlington, VA</span>,
+                  <span className="ml-2 font-semibold text-emerald-700">Silver Spring, MD</span>
+                </p>
+                <p className="text-xs text-gray-500">Or enter coordinates for anywhere in the world.</p>
+              </div>
             </div>
           </div>
 
-          <Button onClick={handleForecast} disabled={loading} className="w-full">
+          <Button onClick={handleForecast} disabled={loading || !city.trim()} className="w-full">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {loading ? "Generating Forecast..." : "Get 7-Day Forecast"}
           </Button>

@@ -104,19 +104,7 @@ export default async function HomePage() {
                 />
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="glass-card max-w-md mx-auto p-8 rounded-2xl">
-                <Wind className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  No data available yet. Run the ETL script to populate observations.
-                </p>
-                <Button asChild variant="outline">
-                  <Link href="/about">Learn More</Link>
-                </Button>
-              </div>
-            </div>
-          )}
+          ) : null}
 
           <div className="text-center mt-10">
             <Button

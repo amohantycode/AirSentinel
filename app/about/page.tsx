@@ -116,13 +116,10 @@ export default function AboutPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-gray-600">
           <p>
-            <strong>Email:</strong> contact@airsentinel.app
+            <strong>Ankit Mohanty:</strong> <a href="mailto:ankitvmohanty5@gmail.com" className="underline text-emerald-700">ankitvmohanty5@gmail.com</a>
           </p>
           <p>
-            <strong>Support:</strong> support@airsentinel.app
-          </p>
-          <p>
-            <strong>Data Partnerships:</strong> data@airsentinel.app
+            <strong>Shaurya Sai:</strong> <a href="mailto:shauryasai@gmail.com" className="underline text-emerald-700">shauryasai@gmail.com</a>
           </p>
         </CardContent>
       </Card>
