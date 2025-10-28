@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       count: data?.length || 0,
     })
   } catch (error) {
-    console.error("[v0] Error fetching alerts:", error)
+    console.error("Error fetching alerts:", error)
     return NextResponse.json({ success: false, error: "Failed to fetch alerts" }, { status: 500 })
   }
 }
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       data: data[0] || data,
     })
   } catch (error) {
-    console.error("[v0] Error creating alert:", error)
+    console.error("Error creating alert:", error)
     return NextResponse.json({ success: false, error: "Failed to create alert" }, { status: 500 })
   }
 }
@@ -119,7 +119,7 @@ export async function PATCH(request: NextRequest) {
       data: updatedAlert,
     })
   } catch (error) {
-    console.error("[v0] Error updating alert:", error)
+    console.error("Error updating alert:", error)
     return NextResponse.json({ success: false, error: "Failed to update alert" }, { status: 500 })
   }
 }
@@ -140,7 +140,7 @@ export async function DELETE(request: NextRequest) {
       message: "Alert deleted successfully",
     })
   } catch (error) {
-    console.error("[v0] Error deleting alert:", error)
+    console.error("Error deleting alert:", error)
     return NextResponse.json({ success: false, error: "Failed to delete alert" }, { status: 500 })
   }
 }

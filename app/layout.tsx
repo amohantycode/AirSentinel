@@ -11,7 +11,6 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "AirSentinel — Smarter, Safer Air Decisions",
   description: "Personalized recommendations to reduce exposure: delay, shorten, or move indoors.",
-  generator: "v0.app",
 }
 
 export default function RootLayout({

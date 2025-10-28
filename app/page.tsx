@@ -29,7 +29,7 @@ async function getLatestObservations() {
 
     return await response.json()
   } catch (error) {
-    console.error("[v0] Error fetching observations:", error)
+    console.error("Error fetching observations:", error)
     return []
   }
 }

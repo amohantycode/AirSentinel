@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       count: data?.length || 0,
     })
   } catch (error) {
-    console.error("[v0] Error fetching reports:", error)
+    console.error("Error fetching reports:", error)
     return NextResponse.json({ success: false, error: "Failed to fetch reports" }, { status: 500 })
   }
 }
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       data: data[0] || data,
     })
   } catch (error) {
-    console.error("[v0] Error creating report:", error)
+    console.error("Error creating report:", error)
     return NextResponse.json({ success: false, error: "Failed to create report" }, { status: 500 })
   }
 }

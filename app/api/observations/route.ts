@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       count: data.length,
     })
   } catch (error) {
-    console.error("[v0] Error fetching observations:", error)
+    console.error("Error fetching observations:", error)
     return NextResponse.json({ success: false, error: "Failed to fetch observations" }, { status: 500 })
   }
 }
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
       data: data[0],
     })
   } catch (error) {
-    console.error("[v0] Error creating observation:", error)
+    console.error("Error creating observation:", error)
     return NextResponse.json({ success: false, error: "Failed to create observation" }, { status: 500 })
   }
 }
