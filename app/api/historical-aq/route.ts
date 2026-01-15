@@ -96,6 +96,11 @@ export async function GET(request: Request) {
         const cutoff = new Date(today)
         cutoff.setDate(cutoff.getDate() - (isNaN(days) ? 7 : days) + 1)
 
+        // Better matching: DC, Maryland, Virginia
+        const matchDC = cityLower.includes("dc") || cityLower.includes("washington")
+        const matchMD = cityLower.includes("md") || cityLower.includes("maryland") || cityLower.includes("baltimore")
+        const matchVA = cityLower.includes("va") || cityLower.includes("virginia") || cityLower.includes("arlington")
+
         // Group by date: collect PM2.5 concentrations
         const byDate: Record<string, number[]> = {}
 
@@ -110,8 +115,13 @@ export async function GET(request: Request) {
           const st = (parts[idxState] || "").toLowerCase()
 
           if (pol !== "PM2.5") continue
-          // loose match: either location or state appears in the query string
-          if (!(cityLower.includes(loc) || cityLower.includes(st) || loc.includes(cityLower) || st.includes(cityLower))) continue
+          
+          // Match by state
+          let match = false
+          if (matchDC && (st.includes("district") || st.includes("columbia"))) match = true
+          if (matchMD && st.includes("maryland")) match = true
+          if (matchVA && st.includes("virginia")) match = true
+          if (!match) continue
 
           const d = new Date(dstr)
           if (isNaN(d.getTime())) continue

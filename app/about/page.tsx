@@ -107,22 +107,6 @@ export default function AboutPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Contact */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Get in Touch</CardTitle>
-          <CardDescription>Questions, feedback, or partnership inquiries</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-gray-600">
-          <p>
-            <strong>Ankit Mohanty:</strong> <a href="mailto:ankitvmohanty5@gmail.com" className="underline text-emerald-700">ankitvmohanty5@gmail.com</a>
-          </p>
-          <p>
-            <strong>Shaurya Sai:</strong> <a href="mailto:shauryasai@gmail.com" className="underline text-emerald-700">shauryasai@gmail.com</a>
-          </p>
-        </CardContent>
-      </Card>
     </div>
   )
 }
