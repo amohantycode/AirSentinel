@@ -7,12 +7,3 @@ models/**/*.joblib filter=lfs diff=lfs merge=lfs -text
 
 # Data files
 *.csv filter=lfs diff=lfs merge=lfs -text
-
-# Exclude lock files from language statistics
-pnpm-lock.yaml linguist-generated=true export-ignore
-package-lock.json linguist-generated=true export-ignore
-*.lock linguist-generated=true export-ignore
-
-# Explicitly set TypeScript as language
-*.ts linguist-language=TypeScript
-*.tsx linguist-language=TypeScript
