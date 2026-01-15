@@ -48,11 +48,11 @@ export default function AssessQuick() {
   }
 
   return (
-    <Card className="border border-black/5 shadow-xl">
-      <CardHeader>
-        <CardTitle>Assess My Activity</CardTitle>
+    <Card className="border border-black/5 shadow-xl elevation-3">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-2xl">Assess My Activity</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="grid gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Location</Label>

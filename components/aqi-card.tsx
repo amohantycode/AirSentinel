@@ -20,7 +20,7 @@ export function AQICard({ location, aqi, timestamp, lat, lon, pollutants }: AQIC
   const level = getAQILevel(aqi)
 
   return (
-    <Card className="w-full glass-card border-border/40 hover:border-primary/50 transition-all group">
+    <Card className="w-full glass-card border-border/40 hover:border-primary/50 transition-all group elevation-2 hover:elevation-3">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg font-semibold">
           <MapPin className="w-4 h-4 text-primary" />
@@ -37,7 +37,7 @@ export function AQICard({ location, aqi, timestamp, lat, lon, pollutants }: AQIC
         <div className="flex items-center gap-6">
           <AQIBadge aqi={aqi} size="lg" showLabel={false} />
           <div className="flex-1 min-w-0">
-            <div className="text-xl font-bold text-balance">{level.level}</div>
+            <div className="text-2xl font-bold text-balance">{level.level}</div>
             <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{level.healthMessage}</div>
           </div>
         </div>

@@ -54,15 +54,15 @@ export default async function HomePage() {
                 <Leaf className="h-4 w-4 text-emerald-600" />
                 <span className="text-sm font-medium text-emerald-700">Personalized Health Decisions</span>
               </div>
-              <h1 className="mt-4 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+              <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-tight">
                 AirSentinel: Plan safer outdoor time
               </h1>
               We analyze your location, activity, and health factors to generate personalized recommendations, whether to delay, shorten, or move activities indoors, helping you reduce exposure for yourself and your family. Every prediction is tailored to your specific situation.
               <div className="flex gap-3 pt-5">
-                <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700">
+                <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700 hover:scale-105 transition-transform duration-200 elevation-2 hover:elevation-3">
                   <Link href="#assess">Assess my activity</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button size="lg" variant="outline" asChild className="hover:scale-105 transition-transform duration-200">
                   <Link href="/map">
                     <Map className="mr-2 h-5 w-5" /> Explore map
                   </Link>
@@ -128,7 +128,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group">
+            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group elevation-1 hover:elevation-2 hover:scale-[1.02] duration-300">
               <CardHeader>
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Map className="h-6 w-6 text-primary" />
@@ -140,7 +140,7 @@ export default async function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group">
+            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group elevation-1 hover:elevation-2 hover:scale-[1.02] duration-300">
               <CardHeader>
                 <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
                   <TrendingUp className="h-6 w-6 text-accent" />
@@ -152,7 +152,7 @@ export default async function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group">
+            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group elevation-1 hover:elevation-2 hover:scale-[1.02] duration-300">
               <CardHeader>
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Bell className="h-6 w-6 text-primary" />
@@ -164,7 +164,7 @@ export default async function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group">
+            <Card className="glass-card border-border/40 hover:border-primary/50 transition-all group elevation-1 hover:elevation-2 hover:scale-[1.02] duration-300">
               <CardHeader>
                 <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
                   <Users className="h-6 w-6 text-accent" />
