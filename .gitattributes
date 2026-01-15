@@ -7,3 +7,7 @@ models/**/*.joblib filter=lfs diff=lfs merge=lfs -text
 
 # Data files
 *.csv filter=lfs diff=lfs merge=lfs -text
+
+# Exclude lock files from language stats
+pnpm-lock.yaml linguist-vendored
+package-lock.json linguist-vendored
