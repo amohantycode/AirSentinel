@@ -91,7 +91,8 @@ def fetch_current_aq(city, key):
         return None
 
 def load_historical_data(location_filter=None, days=30):
-    """Load historical data from local CSV (real EPA data)."""
+    """Load historical data from local CSV (real EPA data).
+    If not enough recent data, fall back to older data."""
     csv_path = DATA_DIR / "combined-historical-2020-2025.csv"
     
     if not csv_path.exists():
@@ -101,7 +102,7 @@ def load_historical_data(location_filter=None, days=30):
     try:
         df = pd.read_csv(str(csv_path))
         
-        # Parse date column safely
+        # Parse date column safely - handle both M/D/YYYY and YYYY-MM-DD formats
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df = df.dropna(subset=["date"])
         df = df.sort_values("date")
@@ -120,11 +121,16 @@ def load_historical_data(location_filter=None, days=30):
                         df["state"].astype(str).str.contains("Maryland", case=False, na=False))
             df = df[mask]
         
-        # Get last N days
+        # Try to get last N days
         cutoff_date = datetime.utcnow().date() - timedelta(days=days)
-        df = df[df["date"].dt.date >= cutoff_date]
+        df_recent = df[df["date"].dt.date >= cutoff_date]
         
-        return df
+        # If no recent data, fall back to all available data (don't filter by date)
+        if df_recent.empty:
+            print(f"  ⚠ No data from last {days} days, using all available historical data", file=sys.stderr)
+            return df
+        
+        return df_recent
     except Exception as e:
         print(f"ERROR loading historical data: {e}", file=sys.stderr)
         import traceback
