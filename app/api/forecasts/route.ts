@@ -82,12 +82,16 @@ import fs from "fs"
  *   Use timestamp to detect stale forecasts
  */
 // WeatherAPI key hardcoded server-side (NEVER expose in client code)
-const WEATHER_API_KEY = "3d5656d3a8e3463da0f220049252110"
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const city = searchParams.get("city")
+
+    if (!WEATHER_API_KEY) {
+        return NextResponse.json({ error: "Missing WEATHER_API_KEY env var" }, { status: 500 })
+    }
 
     if (!city) {
       return NextResponse.json(

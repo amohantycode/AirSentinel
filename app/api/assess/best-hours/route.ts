@@ -22,8 +22,7 @@ const DIURNAL_PM25 = [
 ]
 
 const WEATHER_API_BASE = "https://api.weatherapi.com/v1"
-// Note: For production, prefer process.env instead of hardcoding.
-const WEATHER_API_KEY = "3d5656d3a8e3463da0f220049252110"
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY || ""
 
 function parseNumber(value: string | null, fallback: number) {
   const n = value ? Number(value) : NaN

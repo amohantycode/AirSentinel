@@ -57,9 +57,7 @@ export default async function HomePage() {
               <h1 className="mt-4 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
                 AirSentinel: Plan safer outdoor time
               </h1>
-              <p className="mt-4 text-lg text-gray-600 max-w-xl">
-                Using advanced CatBoost machine learning models, we analyze your location, activity, and health factors to generate personalized recommendations—delay, shorten, or move indoors—to reduce exposure for you or your family. Every prediction is tailored to your specific situation.
-              </p>
+              We analyze your location, activity, and health factors to generate personalized recommendations, whether to delay, shorten, or move activities indoors, helping you reduce exposure for yourself and your family. Every prediction is tailored to your specific situation.
               <div className="flex gap-3 pt-5">
                 <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700">
                   <Link href="#assess">Assess my activity</Link>

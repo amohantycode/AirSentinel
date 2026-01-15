@@ -16,8 +16,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (keep .env.example for template)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -30,3 +31,8 @@ next-env.d.ts
 .DS_Store
 
 venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

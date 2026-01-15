@@ -3,12 +3,9 @@
 import { useEffect, useRef, useState } from "react"
 import { getAQIColor } from "@/lib/aqi-utils"
 
-// Declare global for Google Maps loader
-declare global {
-  interface Window {
-    google: typeof google
-  }
-}
+// Import the web components side-effects to register custom elements
+import "@googlemaps/extended-component-library/api_loader.js"
+import "@googlemaps/extended-component-library/place_picker.js"
 
 interface MapLocation {
   lat: number
@@ -27,198 +24,133 @@ interface GoogleMapWrapperProps {
 
 export function GoogleMapWrapper({
   locations,
-  center = { lat: 38.9072, lng: -77.0369 }, // Center of DMV (Washington DC)
-  zoom = 9, // Zoom level to show DMV region
-  height = "500px",
+  center = { lat: 38.9072, lng: -77.0369 }, // Center of DMV
+  zoom = 9,
+  height = "600px",
   onLocationClick,
 }: GoogleMapWrapperProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [markers, setMarkers] = useState<google.maps.Marker[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const pickerRef = useRef<any>(null)
+  const mapRef = useRef<any>(null)
+  const [searchedLocation, setSearchedLocation] = useState<{ lat: number; lng: number; name: string } | null>(null)
 
-  // Initialize Google Maps
   useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    const picker = pickerRef.current
+    if (!picker) return
 
-    if (!apiKey) {
-      setError("Google Maps API key is not configured")
-      setIsLoading(false)
-      return
-    }
+    const handlePlaceChange = () => {
+      const place = picker.value
 
-    const initMap = async () => {
-      try {
-        // Check if Google Maps is already loaded
-        if (!window.google) {
-          // Load Google Maps script
-          const script = document.createElement("script")
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`
-          script.async = true
-          script.defer = true
-          
-          await new Promise<void>((resolve, reject) => {
-            script.onload = () => resolve()
-            script.onerror = () => reject(new Error("Failed to load Google Maps"))
-            document.head.appendChild(script)
-          })
-        }
-
-        if (!mapRef.current) return
-
-        // DMV region bounds
-        const dmvBounds = {
-          north: 39.8, // Northern Maryland
-          south: 37.9, // Southern Virginia
-          west: -78.2, // Western Virginia
-          east: -76.0, // Eastern Maryland
-        }
-
-        const mapInstance = new google.maps.Map(mapRef.current, {
-          center,
-          zoom,
-          restriction: {
-            latLngBounds: dmvBounds,
-            strictBounds: false, // Allow some panning outside
-          },
-          minZoom: 8, // Prevent zooming out too far
-          maxZoom: 15, // Prevent zooming in too close
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }],
-            },
-          ],
-        })
-
-        setMap(mapInstance)
-        setIsLoading(false)
-      } catch (err: unknown) {
-        console.error("Error loading Google Maps:", err)
-        setError("Failed to load Google Maps")
-        setIsLoading(false)
+      // If no place selected
+      if (!place || !place.location) {
+        setSearchedLocation(null)
+        return
       }
-    }
 
-    initMap()
-  }, [center, zoom])
-
-  // Update markers when locations change
-  useEffect(() => {
-    if (!map || !window.google) return
-
-    // Clear existing markers
-    markers.forEach((marker) => marker.setMap(null))
-
-    // Create new markers
-    const newMarkers = locations.map((location) => {
-      const color = getAQIColor(location.aqi)
-
-      // Create custom marker with AQI color
-      const marker = new google.maps.Marker({
-        position: { lat: location.lat, lng: location.lon },
-        map,
-        title: `${location.name} - AQI: ${location.aqi}`,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: color,
-          fillOpacity: 0.9,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-          scale: 10,
-        },
-        animation: google.maps.Animation.DROP,
-      })
-
-      // Create info window
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div style="padding: 4px 8px; font-family: system-ui, -apple-system, sans-serif;">
-            <h3 style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; color: #1a1a1a;">${location.name}</h3>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <div style="
-                padding: 2px 8px;
-                border-radius: 4px; 
-                background-color: ${color}; 
-                color: white;
-                font-weight: bold;
-                font-size: 14px;
-              ">
-                ${location.aqi}
-              </div>
-              <div style="font-size: 10px; color: #4a4a4a; font-weight: 500;">
-                AQI
-              </div>
-            </div>
-          </div>
-        `,
-      })
-
-      // Add click listener
-      marker.addListener("click", () => {
-        infoWindow.open(map, marker)
-        onLocationClick?.(location)
-      })
-
-      return marker
-    })
-
-    setMarkers(newMarkers)
-
-    // Fit bounds to show all markers within DMV region
-    if (locations.length > 0) {
-      const bounds = new google.maps.LatLngBounds()
-      locations.forEach((location) => {
-        bounds.extend({ lat: location.lat, lng: location.lon })
-      })
-      
-      // Add padding to bounds for better view
-      const padding = { top: 50, right: 50, bottom: 50, left: 50 }
-      map.fitBounds(bounds, padding)
-
-      // Ensure we stay within a reasonable zoom range for DMV
-      const listener = google.maps.event.addListener(map, "idle", () => {
-        const currentZoom = map.getZoom()
-        if (currentZoom && currentZoom > 12) {
-          map.setZoom(12) // Max zoom for DMV overview
-        } else if (currentZoom && currentZoom < 8) {
-          map.setZoom(8) // Min zoom to keep DMV in view
+      // Handle map view update
+      const map = mapRef.current
+      if (map && map.innerMap) {
+        if (place.viewport) {
+          map.innerMap.fitBounds(place.viewport)
+        } else {
+          map.center = place.location
+          map.zoom = 15
         }
-        google.maps.event.removeListener(listener)
+      }
+
+      setSearchedLocation({
+        lat: place.location.lat(),
+        lng: place.location.lng(),
+        name: place.displayName || place.formattedAddress || "Selected Location"
       })
     }
-  }, [map, locations, onLocationClick])
 
-  if (error) {
+    picker.addEventListener("gmpx-placechange", handlePlaceChange)
+    return () => {
+      picker.removeEventListener("gmpx-placechange", handlePlaceChange)
+    }
+  }, [])
+
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const loaderRef = useRef<any>(null)
+
+  useEffect(() => {
+    if (loaderRef.current && apiKey) {
+      loaderRef.current.key = apiKey
+    }
+  }, [apiKey])
+
+  if (!apiKey) {
     return (
-      <div
-        style={{ height }}
-        className="flex items-center justify-center bg-muted rounded-lg border"
-      >
-        <div className="text-center p-6">
-          <p className="text-destructive font-semibold mb-2">Error Loading Map</p>
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Please check your Google Maps API key in .env.local
-          </p>
-        </div>
+      <div className="flex h-full items-center justify-center bg-muted p-4 text-center">
+        <p className="text-destructive">
+          Map Error: Missing Google Maps API Key.<br />
+          Please check .env.local
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="relative" style={{ height }}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg z-10">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-sm text-muted-foreground">Loading map...</p>
-          </div>
+    <div style={{ height, position: "relative" }} className="rounded-xl overflow-hidden shadow-sm border border-border">
+      {/* API Loader - Loads the specific libraries we need */}
+      <gmpx-api-loader
+        ref={loaderRef}
+        solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
+      />
+
+      <gmp-map
+        ref={mapRef}
+        center={`${center.lat},${center.lng}`}
+        zoom={zoom}
+        map-id="DEMO_MAP_ID"
+        style={{ height: "100%", width: "100%", display: "block" }}
+      >
+        {/* Place Picker UI Control */}
+        <div slot="control-block-start-inline-start" className="p-4">
+          <gmpx-place-picker
+            ref={pickerRef}
+            placeholder="Search for a place..."
+            className="w-full max-w-sm shadow-lg"
+          />
         </div>
-      )}
-      <div ref={mapRef} style={{ height: "100%", width: "100%" }} className="rounded-lg" />
+
+        {/* Marker for Searched Location */}
+        {searchedLocation && (
+          <gmp-advanced-marker
+            position={`${searchedLocation.lat},${searchedLocation.lng}`}
+            title={searchedLocation.name}
+          />
+        )}
+
+        {/* AQI Location Markers (Using Advanced Markers with Custom HTML Content) */}
+        {locations.map((loc, idx) => {
+          const color = getAQIColor(loc.aqi)
+          return (
+            <gmp-advanced-marker
+              key={`${loc.name}-${idx}`}
+              position={`${loc.lat},${loc.lon}`}
+              title={`${loc.name} (AQI: ${loc.aqi})`}
+            // Note: Handling clicks on custom elements can sometimes require the inner element
+            >
+              <div
+                className="group relative flex items-center justify-center cursor-pointer"
+                onClick={() => onLocationClick?.(loc)}
+              >
+                <div
+                  className="h-8 w-8 rounded-full border-2 border-white shadow-md flex items-center justify-center text-[10px] font-bold text-white transition-transform hover:scale-110"
+                  style={{ backgroundColor: color }}
+                >
+                  {loc.aqi}
+                </div>
+                {/* Tooltip on hover */}
+                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none z-10">
+                  {loc.name}
+                </div>
+              </div>
+            </gmp-advanced-marker>
+          )
+        })}
+      </gmp-map>
     </div>
   )
 }

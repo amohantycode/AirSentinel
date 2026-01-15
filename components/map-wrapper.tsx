@@ -1,10 +1,26 @@
 "use client"
 
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import { getAQIColor, getAQILevelName } from "@/lib/aqi-utils"
 import { Card } from "@/components/ui/card"
-import { GoogleMapWrapper } from "@/components/google-map-wrapper"
 import { config } from "@/lib/config"
+
+// Dynamically import GoogleMapWrapper to avoid SSR issues with Web Components
+const GoogleMapWrapper = dynamic(
+  () => import("@/components/google-map-wrapper").then((mod) => mod.GoogleMapWrapper),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center bg-muted/50 rounded-lg">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    )
+  }
+)
 
 interface MapLocation {
   lat: number
@@ -119,9 +135,9 @@ export function MapWrapper({
           <div className="absolute top-4 left-4 pointer-events-none">
             <Card className="p-2 shadow-lg bg-white/95 backdrop-blur">
               <div className="text-sm font-semibold text-gray-900">{hoveredLocation.name}</div>
-              <div 
-                className="text-xl font-bold px-2 py-0.5 rounded inline-block mt-1" 
-                style={{ 
+              <div
+                className="text-xl font-bold px-2 py-0.5 rounded inline-block mt-1"
+                style={{
                   backgroundColor: getAQIColor(hoveredLocation.aqi),
                   color: 'white'
                 }}
@@ -141,9 +157,9 @@ export function MapWrapper({
                 <div className="flex-1">
                   <h3 className="font-semibold text-base text-gray-900">{selectedLocation.name}</h3>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span 
-                      className="text-2xl font-bold px-2 py-0.5 rounded" 
-                      style={{ 
+                    <span
+                      className="text-2xl font-bold px-2 py-0.5 rounded"
+                      style={{
                         backgroundColor: getAQIColor(selectedLocation.aqi),
                         color: 'white'
                       }}
