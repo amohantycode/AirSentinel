@@ -2,7 +2,7 @@
 # Quick Setup Helper for Supabase
 # Run this after you've added your Supabase credentials to .env.local
 
-echo "🚀 Congressional App - Supabase Setup Helper"
+echo "🚀 AirSentinel - Optional Supabase Setup"
 echo "=============================================="
 echo ""
 
@@ -42,9 +42,8 @@ echo "6. Restart your dev server"
 echo ""
 echo "📚 Documentation:"
 echo "=================="
-echo "- Detailed guide: SUPABASE_SETUP.md"
-echo "- Checklist: CHECKLIST.md"
-echo "- Data sources: DATA_SOURCES.md"
+echo "- Setup and database guidance: docs/development.md"
+echo "- Architecture and data sources: docs/architecture.md"
 echo ""
 echo "🎯 Next Steps:"
 echo "=============="
