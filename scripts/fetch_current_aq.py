@@ -40,7 +40,7 @@ def get_cat(aqi):
     return "Unknown"
 
 try:
-    url = "http://api.weatherapi.com/v1/current.json"
+    url = "https://api.weatherapi.com/v1/current.json"
     r = requests.get(url, params={"key": KEY, "q": city, "aqi": "yes"}, timeout=10)
     r.raise_for_status()
     data = r.json()

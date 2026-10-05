@@ -21,7 +21,7 @@ export function SiteFooter() {
             <ul className="space-y-1 text-xs">
               <li>
                 <Link href="/map" className="text-gray-600 hover:text-emerald-700 transition-colors">
-                  Live Map
+                  Air Quality Map
                 </Link>
               </li>
               <li>

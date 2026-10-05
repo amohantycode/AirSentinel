@@ -64,7 +64,7 @@ def aqi_category(aqi):
 
 def fetch_current_aq(city, key):
     """Fetch REAL-TIME air quality from WeatherAPI /current.json."""
-    url = "http://api.weatherapi.com/v1/current.json"
+    url = "https://api.weatherapi.com/v1/current.json"
     params = {"key": key, "q": city, "aqi": "yes"}
     
     try:

@@ -3,8 +3,8 @@
 Train 7-day daily forecasters for PM2.5, Ozone, and NO2 from your CSVs.
 
 - Scans:
-    /Users/shauryamallampati/Desktop/congressionalapp/data/combined-historical-2020-2025.csv (if exists)
-    /Users/shauryamallampati/Desktop/congressionalapp/data/2025/*.csv
+    data/combined-historical-2020-2025.csv (if exists)
+    data/2025/*.csv
 - Detects pollutant + correct concentration column per file.
 - Normalizes units (Ozone ppm, NO2 ppb).
 - Builds daily features (lags/rollings + calendar).
@@ -26,7 +26,7 @@ from sklearn.metrics import mean_absolute_error
 from catboost import CatBoostRegressor
 
 # ---- paths ----
-ROOT = "/Users/shauryamallampati/Desktop/congressionalapp"
+ROOT = str(Path(__file__).resolve().parent.parent)
 DATA_ROOT = os.path.join(ROOT, "data")
 DATA_2025 = os.path.join(DATA_ROOT, "2025")
 COMBINED = os.path.join(DATA_ROOT, "combined-historical-2020-2025.csv")

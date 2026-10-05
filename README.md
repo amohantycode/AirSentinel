@@ -1,176 +1,130 @@
 # AirSentinel
 
-Air-quality forecasts and activity-specific exposure guidance.
+**Air-quality exploration and activity exposure planning.**
 
-AirSentinel uses air-quality data to estimate exposure from activity type, duration, and individual sensitivity. It then compares options such as delaying an activity, shortening it, or moving indoors.
+[![CI](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Features
+AirSentinel is a team-built air-quality application that brings together location-based observations, pollutant forecasting, and activity-specific exposure estimates. It explores a practical question: **how might changing the timing, duration, or setting of an outdoor activity change exposure?**
 
-- Check current air quality for a city
-- Generate activity guidance with a dose-based exposure model
-- View seven-day PM2.5, ozone, and NO2 forecasts
-- Find lower-exposure outdoor time windows
-- Explore real-time and historical map layers
-- Review trends in an impact dashboard
+Built with **Next.js · TypeScript · React · Python · CatBoost · Supabase**.
+
+[Quick start](#quick-start) · [Architecture](docs/architecture.md) · [API reference](docs/api.md) · [Development](docs/development.md)
+
+![AirSentinel activity planning interface](docs/assets/airsentinel-preview.jpg)
+
+*Local application preview. Live assessments require the forecast setup below.*
+
+## What it does
+
+| Capability | Implementation | Setup needed |
+| --- | --- | --- |
+| Explore monitoring locations | Searchable map with AQI cards and bundled 2025 observations | Runs locally without credentials; Google Maps is optional |
+| Check current conditions | Server-side WeatherAPI integration for PM2.5, ozone, and NO₂ | WeatherAPI key and Python dependencies |
+| Forecast pollutant levels | Python pipeline combining recent observations, historical features, and seven-day models | Historical CSV and trained model bundles, supplied separately |
+| Compare activity plans | Relative exposure estimates for keeping, delaying, shortening, or moving a plan indoors | Working forecast pipeline |
+| Explore trends and community features | Historical dashboard, reports, and alert subscription forms | Historical data and/or optional Supabase setup |
+
+**Project status:** a functional web prototype with optional data integrations. The repository includes historical observations and model metadata, but **does not include the historical training CSV or the seven-day model bundles**. The local map is the quickest way to explore the included data. Forecasting requires the additional assets described below. Alert subscription storage is implemented; a scheduled email delivery service is not included.
 
 ## Quick start
 
-### Prerequisites
-
-- Node.js 18+
-- pnpm (recommended) or npm
+Use **Node.js 22** and npm. Python is only needed for current conditions, forecasting, and data scripts.
 
 ```bash
-npm install -g pnpm
-```
-
-### Installation
-
-```bash
-git clone https://github.com/ShauryaMallampati/AirSentinal.git
-cd AirSentinal
-pnpm install
-```
-
-### Environment variables
-
-```bash
+git clone https://github.com/amohantycode/AirSentinel.git
+cd AirSentinel
+npm ci
 cp .env.example .env.local
-```
-
-Add the required values to `.env.local`:
-
-```bash
-WEATHER_API_KEY=your_weatherapi_key_here
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key_here
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key_here
-```
-
-The Supabase variables are optional.
-
-### Run locally
-
-```bash
-pnpm dev
-# or
 npm run dev
 ```
 
-Open <http://localhost:3000>.
+Open [localhost:3000/map](http://localhost:3000/map) to explore the bundled monitoring locations. Without a Google Maps key, the app uses its built-in SVG map. These observations are historical snapshots, not live readings.
 
-## API keys
+The application shell, informational pages, and bundled observations work without API keys. Live conditions, assessments, and external services need the corresponding configuration.
 
-### WeatherAPI (required)
+### Enable current conditions and forecasting
 
-1. Create an account at [WeatherAPI](https://www.weatherapi.com/).
-2. Copy the API key from the dashboard.
-3. Set `WEATHER_API_KEY`.
+```bash
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements-ml.txt
+```
 
-### Google Maps (required for map features)
-
-1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/).
-2. Enable the Maps JavaScript API.
-3. Create an API key.
-4. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`.
-5. Restrict the key to the intended domain.
-
-### Supabase (optional)
-
-1. Create a project at [Supabase](https://supabase.com/).
-2. Open **Settings → API**.
-3. Copy the project URL and anonymous key.
-4. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-
-## Application routes
-
-- `/` — city search and quick assessment
-- `/forecast` — seven-day PM2.5, ozone, and NO2 forecasts
-- `/impact` — trends, averages, and unhealthy-day statistics
-- `/map` — interactive map
-- `/resources` — health and activity guidance
-- `/about` — project overview and data sources
-
-## Exposure model
-
-AirSentinel estimates an activity-specific exposure dose:
+Set `WEATHER_API_KEY` in `.env.local`, then restart the development server. Current conditions can run with the key and Python dependencies alone. Forecasting additionally expects:
 
 ```text
-dose = concentration × duration × intensity_factor × sensitivity_factor × indoor_factor
+data/combined-historical-2020-2025.csv
+models/daily_7d/pm25_7d.joblib
+models/daily_7d/ozone_7d.joblib
+models/daily_7d/no2_7d.joblib
 ```
 
-Inputs include pollutant concentration, activity duration and intensity, sensitivity group, and indoor or outdoor location.
+Only load model files from a trusted source. The existing `aqi_model_*.pkl` files are separate artifacts and are not substitutes for these forecast bundles. See [data and model setup](docs/development.md#data-and-model-setup) for the expected inputs and training entry point.
 
-The recommendation engine compares four options:
+### Configuration
 
-1. Keep the current plan
-2. Delay by one hour
-3. Shorten the duration
-4. Move indoors
+| Variable | Purpose |
+| --- | --- |
+| `WEATHER_API_KEY` | Server-side WeatherAPI access for current conditions and forecasts |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Optional interactive Google Maps; restrict to your allowed origins |
+| `NEXT_PUBLIC_SUPABASE_URL` | Optional database project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Optional public database key; access depends on row-level policies |
 
-## API endpoints
+Leave unused values blank. Do not commit `.env.local`. See [development notes](docs/development.md) before configuring database writes or deploying.
 
-| Endpoint | Method | Description | Parameters |
-|---|---|---|---|
-| `/api/forecasts` | GET | Seven-day pollutant predictions | `city` |
-| `/api/assess` | POST | Activity exposure assessment | `pollutant`, `concentration`, `duration`, `intensity`, `sensitivity` |
-| `/api/assess/best-hours` | GET | Lower-exposure time windows | `city`, `pollutant` |
-| `/api/current-aq` | GET | Current air quality | `city` |
-| `/api/historical-aq` | GET | Historical AQI data | `city`, `state` |
+## Architecture
 
-## Forecasting scripts
+```mermaid
+flowchart LR
+    UI[Next.js / React interface] --> API[Next.js route handlers]
+    API --> OBS[Bundled historical observations]
+    API --> PY[Python forecast pipeline]
+    PY --> WEATHER[WeatherAPI current conditions]
+    PY --> HISTORY[Historical CSV]
+    PY --> MODELS[CatBoost model bundles]
+    API --> DB[Supabase REST API]
+    API --> ASSESS[Relative exposure comparison]
+```
+
+- **Typed application layer:** TypeScript components, API routes, and shared observation types.
+- **Separate forecast pipeline:** Python owns feature construction and model inference; route handlers return JSON to the interface.
+- **Inspectable recommendations:** activity duration, intensity, sensitivity, and indoor assumptions contribute to a relative exposure score.
+- **Optional integrations:** the bundled observation path works independently of WeatherAPI, Google Maps, and Supabase.
+
+See [architecture and tradeoffs](docs/architecture.md) for request flows, fallback behavior, and limitations.
+
+## Verify locally
 
 ```bash
-pip install -r requirements-ml.txt
-python3 scripts/forecast_api_hybrid.py "Washington, DC" "your_weatherapi_key"
+npm run check       # ESLint and TypeScript
+npm run build       # Production build with checks enabled
+npm test            # HTTP smoke tests against the production build
 ```
 
-## Data sources
+Tests run without API credentials and cover public pages, bundled observation responses, filtering, and selected error paths. They do not validate model accuracy or external integrations. GitHub Actions runs the same checks on pushes and pull requests.
 
-- Current air quality: WeatherAPI
-- Historical observations: EPA air-quality data from 2020–2025
-- Forecasts: CatBoost models trained on EPA data
+## Repository guide
 
-## Contributing
+| Path | Responsibility |
+| --- | --- |
+| [`app/`](app/) | Pages and HTTP route handlers |
+| [`components/`](components/) | Map, charts, forms, and shared UI |
+| [`lib/`](lib/) | Types, AQI helpers, and integration configuration |
+| [`scripts/`](scripts/) | Python ingestion/inference/training and SQL setup |
+| [`models/`](models/) | Existing model artifacts and forecast metadata |
+| [`public/`](public/) | Bundled observation snapshots and static assets |
+| [`tests/`](tests/) | Production HTTP smoke tests |
+| [`docs/`](docs/) | Architecture, API contracts, and setup details |
 
-Pull requests are welcome.
+## Model scope and next steps
 
-1. Fork the repository.
-2. Create a branch: `git checkout -b feature/my-change`.
-3. Commit the change: `git commit -m "Describe your change"`.
-4. Push the branch: `git push origin feature/my-change`.
-5. Open a pull request.
+The exposure score is a heuristic in relative units, not a measured inhaled dose. The current implementation includes fixed assumptions for indoor exposure, a one-hour delay, and uncertainty bands. Hourly estimates may use a constructed daily profile when provider data is unavailable. No clinical validation or forecast accuracy claim is made here.
 
-## Troubleshooting
+Priority follow-up work is to restore versioned forecast assets, publish reproducible evaluation results, improve validation and data-source labeling, and replace synchronous Python execution with an asynchronous inference service. See the [documented limitations](docs/architecture.md#limitations-and-next-steps).
 
-### API key not found
+## Team and license
 
-- Confirm that `.env.local` exists.
-- Confirm that the required keys are set.
-- Restart the development server.
+AirSentinel was developed as a team project. This repository documents the shared application; it does not assign individual contributions.
 
-### Map not loading
-
-- Ensure the Maps JavaScript API is enabled.
-- Check the API key restrictions.
-- Confirm that `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is set.
-
-### Forecast shows “No data”
-
-- Verify that the WeatherAPI key is valid.
-- Check the network connection.
-- Try an alternate city spelling.
-
-### Build fails
-
-Remove generated dependencies and build output, then reinstall:
-
-```bash
-rm -rf node_modules .next
-pnpm install
-pnpm build
-```
-
-## License
-
-MIT
+Licensed under the [MIT License](LICENSE). Existing copyright notices are preserved.

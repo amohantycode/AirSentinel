@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
     const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(q)}`
     const res = await fetch(url, {
-      headers: { "User-Agent": "airsentinel/1.0 (contact@airsentinel.app)" },
+      headers: { "User-Agent": "AirSentinel/0.1 (https://github.com/amohantycode/AirSentinel)" },
       next: { revalidate: 600 },
     })
     if (!res.ok) throw new Error(`Geocode failed: ${res.status}`)
