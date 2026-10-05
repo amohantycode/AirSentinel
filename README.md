@@ -2,7 +2,7 @@
 
 **Air-quality exploration and activity exposure planning.**
 
-[![CI](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml)
+[![CI](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/amohantycode/AirSentinel/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 AirSentinel is a team-built air-quality application that brings together location-based observations, pollutant forecasting, and activity-specific exposure estimates. It explores a practical question: **how might changing the timing, duration, or setting of an outdoor activity change exposure?**
