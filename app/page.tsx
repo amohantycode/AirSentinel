@@ -52,12 +52,12 @@ export default async function HomePage() {
             <div className="text-gray-900">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-200 bg-white/70 shadow-sm">
                 <Leaf className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Personalized Health Decisions</span>
+                <span className="text-sm font-medium text-emerald-700">Air Quality & Activity Planning</span>
               </div>
               <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-tight">
-                AirSentinel: Plan safer outdoor time
+                AirSentinel: Plan your outdoor time
               </h1>
-              We analyze your location, activity, and health factors to generate personalized recommendations, whether to delay, shorten, or move activities indoors, helping you reduce exposure for yourself and your family. Every prediction is tailored to your specific situation.
+              Explore air-quality observations and compare how activity duration, intensity, and indoor settings affect estimated exposure. See the factors behind each recommendation.
               <div className="flex gap-3 pt-5">
                 <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700 hover:scale-105 transition-transform duration-200 elevation-2 hover:elevation-3">
                   <Link href="#assess">Assess my activity</Link>
@@ -76,12 +76,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Current Air Quality Section */}
+      {/* Monitoring Observations Section */}
       <section className="py-12 sm:py-16 md:py-20 relative bg-background/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 text-balance">Current Air Quality</h2>
-            <p className="text-base sm:text-lg text-muted-foreground">Live readings from monitored locations</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 text-balance">Monitoring Observations</h2>
+            <p className="text-base sm:text-lg text-muted-foreground">Latest available records from your configured data source</p>
           </div>
 
           {observations.length > 0 ? (
@@ -102,7 +102,9 @@ export default async function HomePage() {
                 />
               ))}
             </div>
-          ) : null}
+          ) : (
+            <p className="text-center text-muted-foreground">No database observations are configured. Explore the map for bundled historical data.</p>
+          )}
 
           <div className="text-center mt-10">
             <Button
@@ -133,9 +135,9 @@ export default async function HomePage() {
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <Map className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Live Map</CardTitle>
+                <CardTitle className="text-xl">Air Quality Map</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Interactive map showing real-time AQI readings across your region
+                  Explore monitoring locations and historical air-quality observations
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -147,7 +149,7 @@ export default async function HomePage() {
                 </div>
                 <CardTitle className="text-xl">AI Forecasts</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  24-hour air quality predictions powered by machine learning
+                  Seven-day pollutant forecasts when model and data assets are configured
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -159,7 +161,7 @@ export default async function HomePage() {
                 </div>
                 <CardTitle className="text-xl">Smart Alerts</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Get notified when air quality reaches unhealthy levels
+                  Save location and threshold preferences for future notification delivery
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -191,7 +193,7 @@ export default async function HomePage() {
                   <CardTitle className="text-2xl md:text-3xl mb-3">Stay Informed, Stay Healthy</CardTitle>
                   <CardDescription className="text-base md:text-lg leading-relaxed">
                     Air pollution can affect everyone, especially children, elderly, and those with respiratory
-                    conditions. Set up personalized alerts to protect your family.
+                    conditions. Explore the available data and learn about air quality.
                   </CardDescription>
                 </div>
               </div>
@@ -216,7 +218,7 @@ export default async function HomePage() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Breathe Easier?</h2>
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Join thousands of families monitoring their local air quality
+            Explore local observations and the factors behind activity exposure estimates
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="glow-primary text-base h-12 px-8">

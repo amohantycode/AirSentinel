@@ -208,7 +208,7 @@ export default function AlertsPage() {
                   <SelectItem value="200">200 - Unhealthy</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-sm text-muted-foreground">You'll be notified when AQI exceeds this level</p>
+              <p className="text-sm text-muted-foreground">Store the AQI threshold for this subscription</p>
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -297,26 +297,13 @@ export default function AlertsPage() {
         )}
       </div>
 
-      {/* How It Works */}
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>How Alerts Work</CardTitle>
+          <CardTitle>About Alert Subscriptions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            <strong>1. Real-time Monitoring:</strong> We check air quality every 5 minutes for your selected locations.
-          </p>
-          <p>
-            <strong>2. Instant Notifications:</strong> When AQI exceeds your threshold, you'll receive an email alert
-            immediately.
-          </p>
-          <p>
-            <strong>3. Smart Throttling:</strong> We won't spam you - alerts are sent at most once every 4 hours per
-            location.
-          </p>
-          <p>
-            <strong>4. Easy Management:</strong> Pause, resume, or delete alerts anytime from this page.
-          </p>
+          <p>Subscriptions store a location, email address, and AQI threshold in the configured database.</p>
+          <p>Automated monitoring and email delivery are not included in this prototype. Saving a subscription does not send notifications.</p>
         </CardContent>
       </Card>
       </div>

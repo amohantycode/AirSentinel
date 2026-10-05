@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-ROOT = "/Users/shauryamallampati/Desktop/congressionalapp"
+ROOT = str(Path(__file__).resolve().parent.parent)
 MODEL_DIR = os.path.join(ROOT, "models", "daily_7d")
 
 # ---- EPA AQI calculation ----

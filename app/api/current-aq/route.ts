@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { spawnSync } from "child_process"
 import path from "path"
+import fs from "fs"
+
+export const dynamic = "force-dynamic"
 
 /**
  * GET /api/current-aq
@@ -33,7 +36,9 @@ export async function GET(request: NextRequest) {
 
     const scriptPath = path.join(process.cwd(), "scripts", "fetch_current_aq.py")
 
-    const result = spawnSync("python3", [scriptPath, WEATHER_API_KEY, city], {
+    const venvPython = path.join(process.cwd(), "venv", "bin", "python3")
+    const pythonPath = fs.existsSync(venvPython) ? venvPython : "python3"
+    const result = spawnSync(pythonPath, [scriptPath, WEATHER_API_KEY, city], {
       encoding: "utf-8",
       timeout: 15000,
     })

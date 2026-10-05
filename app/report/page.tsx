@@ -291,7 +291,7 @@ export default function ReportPage() {
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                placeholder="Describe what you're observing (e.g., visibility, smell, symptoms)"
+                placeholder="Describe what you&apos;re observing (e.g., visibility, smell, symptoms)"
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -400,11 +400,11 @@ export default function ReportPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
-            <strong>Be Specific:</strong> Include exact location details and what you're observing (visibility, smell,
+            <strong>Be Specific:</strong> Include exact location details and what you&apos;re observing (visibility, smell,
             physical symptoms).
           </p>
           <p>
-            <strong>Be Honest:</strong> Only report conditions you're actually experiencing. False reports harm the
+            <strong>Be Honest:</strong> Only report conditions you&apos;re actually experiencing. False reports harm the
             community.
           </p>
           <p>

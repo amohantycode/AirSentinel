@@ -157,7 +157,7 @@ export async function GET(request: Request) {
 
     // 2) If local CSV produced no results, fall back to provider (limited) to avoid blanks
     if (historicalData.length === 0 && WEATHER_API_KEY) {
-      const forecastUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}&days=7&aqi=yes`
+      const forecastUrl = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(city)}&days=7&aqi=yes`
       try {
         const forecastResponse = await fetch(forecastUrl)
         if (forecastResponse.ok) {

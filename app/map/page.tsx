@@ -45,6 +45,7 @@ export default function MapPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isUsingMockData, setIsUsingMockData] = useState(false)
+  const [dataSource, setDataSource] = useState("Loading observations...")
   const [error, setError] = useState<string | null>(null)
   const [mapCenter, setMapCenter] = useState<[number, number]>([38.9072, -77.0369]) // Default to DC
   const [mapZoom, setMapZoom] = useState<number>(9)
@@ -89,6 +90,9 @@ export default function MapPage() {
 
           setLocations(transformedLocations)
           setIsUsingMockData(false)
+          setDataSource(result.source === "2025 Historical Data"
+            ? "Historical monitoring observations from 2025 · DC, Maryland, and Virginia"
+            : "Monitoring observations from the configured database")
         } else {
           // No data available, use mock data
           setLocations(fallbackLocations)
@@ -144,8 +148,8 @@ export default function MapPage() {
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">DMV Air Quality Map</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             {isUsingMockData 
-              ? "Showing sample DMV data - Configure Supabase to see real-time AQI readings" 
-              : "Explore real-time AQI readings across DC, Maryland, and Virginia"}
+              ? "Showing illustrative sample locations and AQI values"
+              : dataSource}
           </p>
         </div>
 
@@ -288,7 +292,7 @@ export default function MapPage() {
               <CardDescription className="text-sm">
                 {isLoading 
                   ? "Loading locations..." 
-                  : `Current AQI readings (${locations.length} locations)`}
+                  : `Available observations (${locations.length} records)`}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-3 pt-0">
